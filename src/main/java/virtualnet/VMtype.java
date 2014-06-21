@@ -9,10 +9,13 @@ public class VMtype {
 	// processing power per core
 	private double unitprocpower = 0;
 	
+	// total price per time unit
 	private double price = 0;
 	
+	// max procpower that can be utilized
 	private double maxpower = 0;
 
+	
 	public VMtype(int typeid, int corenum, double unitprocpower, double unitprice) {
 		setTypeid(typeid);
 		setCorenum(corenum);

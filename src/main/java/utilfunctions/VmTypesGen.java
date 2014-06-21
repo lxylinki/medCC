@@ -35,5 +35,15 @@ public class VmTypesGen {
 		}
 		return types;
 	}
+	
+	// get a type by its id
+	public static VMtype getType(int typeid, List<VMtype> alltypes) {
+		for (VMtype type: alltypes) {
+			if (type.getTypeid() == typeid ) {
+				return type;
+			}
+		}
+		return null;		
+	}
 
 }

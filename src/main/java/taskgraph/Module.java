@@ -1,6 +1,7 @@
 package taskgraph;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.cloudbus.cloudsim.Cloudlet;
@@ -10,7 +11,16 @@ import virtualnet.VMtype;
 
 public class Module extends Cloudlet {
 	
+	// DAG structural parameters 
 	private String role = "Module";
+	
+	private List<Module> preMods = null; // preceding modules 
+	
+	private List<Module> sucMods = null; // succeeding modules
+	
+	private List<DataTrans> dataIn = null;	// incoming data transfers
+	
+	private List<DataTrans> dataOut = null; // outgoing data transfers
 	
 	// resource requirement
 	private int wcpu = 1;
@@ -19,7 +29,7 @@ public class Module extends Cloudlet {
 	
 	private int wdisk = 1;
 	
-	// exec time and cost
+	//current exec time and cost
 	private double time = 0;
 	
 	private double cost = 0;
@@ -48,7 +58,7 @@ public class Module extends Cloudlet {
 	private double tlevel = 0;
 	
 	// parallel factor
-	private double alpha = 0.15;
+	private double alpha = 1.0;
 	
 	// sched related
 	private int vmtypeid = -1;
@@ -59,13 +69,8 @@ public class Module extends Cloudlet {
 	
 	private int rescheduled = 0;
 	
-	private List<Module> preMods = null; // preceding modules 
-	
-	private List<Module> sucMods = null; // succeeding modules
-	
-	private List<DataTrans> dataIn = null;	// preceding datatrans 
-	
-	private List<DataTrans> dataOut = null; // succeeding datatrans
+	// execution info on all types
+	private HashMap<VMtype, execInfo> mappings = null;
 	
 	/**
 	 * @param cloudletId
@@ -81,6 +86,7 @@ public class Module extends Cloudlet {
 		
 		// exec by procpower 1
 		setTime(getWorkload());
+		setMappings(new HashMap<VMtype, execInfo>());
 
 	}
 	
@@ -100,7 +106,19 @@ public class Module extends Cloudlet {
 		return exectime;
 	}
 	
-
+	// the execution information on a vm type
+	public static class execInfo  {
+		int typeid;
+		double execTime;		
+		double execCost;
+		
+		execInfo(int vmtypeid, double time, double cost) {
+			typeid = vmtypeid;
+			execTime = time;
+			execCost = cost;
+		}
+	}
+	
 	public void initTime() {
 		this.setEst(0);
 		this.setEft(0);
@@ -331,6 +349,14 @@ public class Module extends Cloudlet {
 
 	public void setRescheduled(int rescheduled) {
 		this.rescheduled = rescheduled;
+	}
+
+	public HashMap<VMtype, execInfo> getMappings() {
+		return mappings;
+	}
+
+	public void setMappings(HashMap<VMtype, execInfo> mappings) {
+		this.mappings = mappings;
 	}
 
 }
