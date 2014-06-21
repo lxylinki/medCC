@@ -1,0 +1,10 @@
+%function [ output_args ] = Untitled1( input_args )
+%UNTITLED1 Summary of this function goes here
+%  Detailed explanation goes here
+%y1 = load('workflow_5_6_0_ImpPercent.txt');
+numfiles = 10;
+mydata = cell(1, numfiles);
+for i = 0:numfiles-1
+  myfilename = sprintf('workflow_5_6_%d_ImpPercent.txt', i);
+  mydata{i+1} = load(myfilename);
+end

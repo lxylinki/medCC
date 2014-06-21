@@ -1,0 +1,6 @@
+AvrgDelay:
+0
+AvrgImp:
+0
+StandardDevOfImp:
+0

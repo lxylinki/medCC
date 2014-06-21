@@ -1,0 +1,34 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>medCC</groupId>
+  <artifactId>medCC</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <name>MedCC</name>
+<dependencies>
+    <dependency>
+        <groupId>org.cloudbus.cloudsim</groupId>
+        <artifactId>cloudsim</artifactId>
+        <version>3.1-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+        <groupId>org.cloudbus</groupId>
+        <artifactId>cloudsimex-core</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+        <groupId>org.cloudbus</groupId>
+        <artifactId>cloudsimex-geolocation</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+        <groupId>org.cloudbus</groupId>
+        <artifactId>cloudsimex-web</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+        <groupId>org.cloudbus</groupId>
+        <artifactId>cloudsimex-mapreduce</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </dependency>
+</dependencies>
+</project>

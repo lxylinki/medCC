@@ -1,0 +1,7 @@
+x = [1:20];
+y = load('Imp.txt');
+e = load('stdDev.txt');
+%errorbar(x, y, e);
+barweb(y, e);
+xlabel('Problem Index');
+ylabel('Average Improvement');

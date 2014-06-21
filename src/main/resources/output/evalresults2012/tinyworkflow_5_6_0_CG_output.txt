@@ -1,0 +1,10 @@
+9.99 
+9.99 
+6.57 
+6.57 
+AvrgDelay:
+8.28
+AvrgImp:
+0
+StandardDevOfImp:
+0

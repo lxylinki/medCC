@@ -1,0 +1,32 @@
+x = [1:100];
+
+%y1 = load('Opt_5_6.txt');
+%y2 = load('CG_5_6.txt');
+%y3 = load('GAIN_5_6.txt');
+
+%plot(x, y1, ':or', 'LineWidth', 2.0);
+
+%plot(x, y2, ':og', 'LineWidth', 2.0);
+
+%plot(x, y3, ':ob', 'LineWidth', 2.0);
+
+
+opt = load('Opt_7_14.txt');
+cg = load('CG__11.txt');
+gain = load('GAIN_6_11.txt');
+
+countCG = 0;
+
+countGAIN = 0;
+
+for(k=1:100)
+    if(cg(k)==opt(k))
+        countCG = countCG + 1;
+    end
+    
+    if(gain(k)==opt(k))
+        countGAIN = countGAIN + 1;
+    end
+end
+
+%plot(x, opt, ':og', x, cg, ':ob',x, gain, ':om', 'LineWidth', 2.0);

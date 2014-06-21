@@ -1,0 +1,3 @@
+OptMin: 49
+CG: 49
+GAIN: 0
