@@ -16,6 +16,7 @@ public class CriticalGreedy {
 	public static VMtype selectNewType(Module mod, double budgetleft, List<VMtype> vmtypes) {
 		VMtype newtype = null;
 		double timedecmax = Double.MIN_VALUE;
+		
 		for (VMtype type: vmtypes) {
 			// skip if no time dec
 			if (mod.getTimeOn(type) >= mod.getTime()) {
@@ -86,8 +87,23 @@ public class CriticalGreedy {
 			System.out.printf("Error: budget %.2f below min cost %.2f.\n", budget, mincost);
 			System.exit(1);
 		}
-		System.out.printf("budget %.2f, min cost %.2f, max cost %.2f.\n", budget, mincost, maxcost);
 		
+		// directly apply best sched if budget is redundant
+		if (budget >= maxcost) {
+			int V = vmtypes.size();
+			VMtype vprime = vmtypes.get(V-1);
+			for (int i=1; i<N-1; i++) {
+				Module mod = workflow.getModule(i);
+				mod.setVmtype(vprime);
+			}
+			CriticalPath.topologicalSort(workflow);
+			double ed = CriticalPath.longestpathlen(workflow.getEntryMod(), workflow.getExitMod(), workflow, null);	
+			System.out.printf("ED=%.2f, budget left: %.2f\n", ed, budget-maxcost);
+			workflow.printSched();
+			System.exit(0);
+		}
+		
+		System.out.printf("budget %.2f, min cost %.2f, max cost %.2f.\n", budget, mincost, maxcost);
 				
 		// keep track of current cost
 		double currentCost = mincost;
@@ -129,9 +145,9 @@ public class CriticalGreedy {
 			// update current CP
 			ed = CriticalPath.longestpathlen(workflow.getEntryMod(), workflow.getExitMod(), workflow, currentCP);		
 		}// end while	
-		
-		System.out.printf("ED=%.2f, budget left: %.2f\n", ed, budgetleft);
 		workflow.printSched();
+		System.out.printf("ED=%.2f, budget left: %.2f\n", ed, budgetleft);
+		
 		
 	}
 
@@ -163,11 +179,11 @@ public class CriticalGreedy {
 		*/
 		
 		List <VMtype> vmtypes = new ArrayList<VMtype>();
-		vmtypes = VmTypesGen.vmTypeList(4);
+		vmtypes = VmTypesGen.vmTypeList(6);
 		
 		Workflow mytest = new Workflow(false);
-		Workflowreaderlite.readliteworkflow(mytest, 10, 15, 3, false);
+		Workflowreaderlite.readliteworkflow(mytest, 40, 500, 2, false);
 		
-		criticalgreedy(mytest, vmtypes, 7.5);
+		criticalgreedy(mytest, vmtypes, 42);
 	}
 }

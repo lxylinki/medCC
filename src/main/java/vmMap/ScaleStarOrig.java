@@ -22,8 +22,8 @@ public class ScaleStarOrig {
 			return bleveldiff;
 		}
 	}
-
 	
+	// select max CA1
 	// comparative advantage
 	public static double CA1(Module mod, VMtype vmtype1, VMtype vmtype2) {
 		double costdiffrate = (mod.getCostOn(vmtype2) - mod.getCostOn(vmtype1))/mod.getCostOn(vmtype1);
@@ -35,7 +35,7 @@ public class ScaleStarOrig {
 	// vmtype2 is newer type
 	public static double CA2(Module mod, VMtype vmtype1, VMtype vmtype2) {
 		double timediff = mod.getTimeOn(vmtype2)-mod.getTimeOn(vmtype1);
-		double costdiff = mod.getCostOn(vmtype2)-mod.getCostOn(vmtype1);
+		double costdiff = mod.getCostOn(vmtype1)-mod.getCostOn(vmtype2);
 		if ((costdiff <= 0) || (timediff > 0)) {
 			return 0;
 		} else {
@@ -96,7 +96,6 @@ public class ScaleStarOrig {
 			}
 		}
 		
-		
 		for (int i=1; i<N-1; i++) {
 			Module mod = workflow.getModule(i);
 			// init label with avg exec time
@@ -127,32 +126,49 @@ public class ScaleStarOrig {
 		arrayA = new Aij[N][V];	
 		
 		// vprime is the best type i.e. max procpower
-		VMtype vprime = vmtypes.get(V-1);
+		// vprime is not the best vm but the current vm
+		// VMtype vprime = vmtypes.get(V-1);
 		
+		double currentCost = 0;
 		for (int j=0; j<V; j++) {
-			
 			VMtype vmj = vmtypes.get(j);
 			//System.out.printf("checking type %d ...\n", j);
 			
 			// skip entry and exit mod
 			for (int i=1; i<N-1; i++) {
 				Module mod = workflow.getModule(i);
+				if (mod.getVmtypeid()==-1) {
+					mod.setVmtype(vmj);
+					currentCost += mod.getCost();
+					continue;
+				}
 				//System.out.printf("checking mod %d ...\n", i);
+				double CA1a = CA1(mod, vmj, mod.getVmtype());
+				double CA1b = CA1(mod, mod.getVmtype(), vmj);
 				
-				double CA1a = CA1(mod, vmj, vprime);
-				double CA1b = CA1(mod, vprime, vmj);
+				//double CA1a = CA1(mod, vmj, vprime);
+				//double CA1b = CA1(mod, vprime, vmj);
 				
 				//System.out.printf("CA1(mod %d, vmtype %d, vmtype %d) = %.2f\n", i, j, V-1, CA1a);
 				//System.out.printf("CA1(mod %d, vmtype %d, vmtype %d) = %.2f\n", i, V-1, j, CA1b);
 				
+				/**
 				if (CA1a > CA1b) {
 					// change to type vprime
 					mod.setVmtype(vprime);
 				} else {
 					// set to vmj
 					mod.setVmtype(vmj);
-				}
+				}*/
 				
+				if (CA1a > CA1b) {
+					// added budget check
+					double costinc = mod.getCostOn(vmj) - mod.getCostOn(mod.getVmtype());
+					if (currentCost + costinc <= budget) {
+						mod.setVmtype(vmj);
+						currentCost += costinc;
+					}
+				}
 			}
 		}
 		
@@ -161,7 +177,7 @@ public class ScaleStarOrig {
 
 			for (int i=1; i<N-1; i++) {
 				Module mod = workflow.getModule(i);
-				//System.out.printf("mod %d --- vmtype %d\n", mod.getModId(), mod.getVmtypeid());
+				//System.out.printf("mod %d - vmtype %d\n", mod.getModId(), mod.getVmtypeid());
 
 				if (mod.getVmtypeid() == vmj.getTypeid()) {
 					arrayA[i][j] = new Aij(i,j,0);
@@ -169,6 +185,7 @@ public class ScaleStarOrig {
 					// assume map to type j
 					double ca2val = CA2(mod, mod.getVmtype(), vmj);
 					arrayA[i][j] = new Aij(i,j,ca2val);
+					//System.out.printf("mod%d vmtype%d CA2=%.2f\n", mod.getModId(), vmj.getTypeid(), ca2val);
 				}
 			}
 		}	
@@ -179,19 +196,14 @@ public class ScaleStarOrig {
 			
 			for (int i=1; i<N-1; i++) {
 				//System.out.printf("A[%d][%d] = %.2f ", i, j, arrayA[i][j].val);
-				
 				if (arrayA[i][j].val != 0) {
 					setA.add(arrayA[i][j]);
 				}
 			}
-			System.out.print("\n");
+			//System.out.print("\n");
 		}		
 
-		// current cost
-		double currentCost = 0;
-		for (Module mod: workflow.getModList()) {
-			currentCost += mod.getCost();
-		}
+		
 		
 		// sort setA in increasing order of ca2val
 		if (setA.size() > 0) {
@@ -217,7 +229,6 @@ public class ScaleStarOrig {
 					// reassign
 					modi.setVmtype(typej);
 				}
-				
 				// remove element
 				setA.remove(0);
 			}
@@ -240,7 +251,6 @@ public class ScaleStarOrig {
 				// remove element
 				setA.remove(maxindex);
 			}
-			
 		}	
 		
 		if (currentCost > budget) {
@@ -253,13 +263,14 @@ public class ScaleStarOrig {
 				Module mod = workflow.getModule(i);
 				mod.setVmtype(mintype);
 				currentCost += mod.getCost();
-				System.out.printf("mod %d --- vmtype %d\n", mod.getModId(), mod.getVmtypeid());
+				//System.out.printf("mod %d - vmtype %d\n", mod.getModId(), mod.getVmtypeid());
 			}
 		}
 		
 		double ed = CriticalPath.longestpathlen(workflow.getEntryMod(), workflow.getExitMod(), workflow, null);
-		System.out.printf("\nED: %.2f, cost %.2f\n", ed, currentCost);
 		workflow.printSched();
+		System.out.printf("ED: %.2f, cost %.2f\n", ed, currentCost);
+		
 		
 	}
 
@@ -293,10 +304,10 @@ public class ScaleStarOrig {
 		
 		
 		List <VMtype> vmtypes = new ArrayList<VMtype>();
-		vmtypes = VmTypesGen.vmTypeList(4);
+		vmtypes = VmTypesGen.vmTypeList(6);
 		Workflow mytest = new Workflow(false);
-		Workflowreaderlite.readliteworkflow(mytest, 10, 15, 3, false);
-		scalestar(mytest, vmtypes, 7);
+		Workflowreaderlite.readliteworkflow(mytest, 40, 500, 2, false);
+		scalestar(mytest, vmtypes, 42);
 		
 	}
 
