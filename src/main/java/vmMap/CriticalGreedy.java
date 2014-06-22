@@ -8,10 +8,35 @@ import filereaders.Workflowreaderlite;
 import taskgraph.Module;
 import taskgraph.Workflow;
 import utilfunctions.CriticalPath;
+import utilfunctions.VmTypesGen;
 import virtualnet.VMtype;
 
 public class CriticalGreedy {
-
+	
+	public static VMtype selectNewType(Module mod, double budgetleft, List<VMtype> vmtypes) {
+		VMtype newtype = null;
+		double timedecmax = Double.MIN_VALUE;
+		for (VMtype type: vmtypes) {
+			// skip if no time dec
+			if (mod.getTimeOn(type) >= mod.getTime()) {
+				continue;
+			}
+			// skip if cost inc exceeds budget left
+			double costinc = mod.getCostOn(type) - mod.getCost();
+			if (costinc > budgetleft) {
+				continue;
+			}
+			// select max time dec
+			double timedec = mod.getTime() - mod.getTimeOn(type);
+			if (timedec >= timedecmax) {
+				//System.out.printf("time dec: %.2f\n", timedec);
+				timedecmax = timedec;
+				newtype = type;
+			}						
+		}
+		// if null remain current sched
+		return newtype;
+	}
 		
 	// main algorithm
 	public static void criticalgreedy(Workflow workflow, List<VMtype> vmtypes, double budget) {
@@ -21,8 +46,7 @@ public class CriticalGreedy {
 		
 		// profiling: collect mod-vmtype execution info
 		for (VMtype type: vmtypes) {
-			for (int i=1; i<N-1; i++) {
-				Module mod = workflow.getModule(i);
+			for(Module mod: workflow.getModList()) {
 				mod.profiling(type);
 			}
 		}
@@ -33,14 +57,14 @@ public class CriticalGreedy {
 		for (int i=1; i<N-1; i++) {
 			Module mod = workflow.getModule(i);
 			double localmin = Double.MAX_VALUE;
-			mod.printProfiles();
+			//mod.printProfiles();
 			for (VMtype vt: vmtypes) {
 				if (mod.getCostOn(vt) < localmin) {
 					localmin = mod.getCostOn(vt);
 					mod.setVmtype(vt);
 				}
 			}
-			System.out.printf("mod%d - vmtype%d\n", mod.getModId(), mod.getVmtypeid());
+			//System.out.printf("mod%d - vmtype%d\n", mod.getModId(), mod.getVmtypeid());
 			mincost += mod.getCost();
 		}
 		
@@ -62,14 +86,53 @@ public class CriticalGreedy {
 			System.out.printf("Error: budget %.2f below min cost %.2f.\n", budget, mincost);
 			System.exit(1);
 		}
-		System.out.printf("budget %.2f, min cost %.2f, max cost %.2f.\n", budget, mincost, maxcost);	
+		System.out.printf("budget %.2f, min cost %.2f, max cost %.2f.\n", budget, mincost, maxcost);
+		
 				
 		// keep track of current cost
 		double currentCost = mincost;
+		double budgetleft = budget - currentCost;
+		List<Module> currentCP = new ArrayList<Module>();
 		
-		CriticalPath.topologicalSort(workflow);
-		double ed = CriticalPath.longestpathlen(workflow.getEntryMod(), workflow.getExitMod(), workflow);
+		CriticalPath.topologicalSort(workflow);		
+		double ed = CriticalPath.longestpathlen(workflow.getEntryMod(), workflow.getExitMod(), workflow, currentCP);
 		System.out.printf("init ED: %.2f, init cost %.2f\n", ed, currentCost);
+		
+		//workflow.printStructInfo();
+		//workflow.printTimeInfo();
+		
+		while (budgetleft >= 0) {
+			// number of new reschedules
+			double numOfResched = 0;
+			// modules on CP
+			for(Module mod: currentCP){
+				// skip entry/exit mod
+				if (mod.getPreMods().isEmpty() || mod.getSucMods().isEmpty()) {
+					continue;
+				}
+				//System.out.printf("checking critical mod%d\n", mod.getModId());
+				VMtype newtype = selectNewType(mod, budgetleft, vmtypes);
+				
+					if (newtype != null) {
+						System.out.printf("Reschedule mod%d to vmtype%d\n", mod.getModId(), newtype.getTypeid());
+						// new reschedule found
+						numOfResched++;
+						double costinc = mod.getCostOn(newtype)-mod.getCost();
+						mod.setVmtype(newtype);
+						budgetleft -= costinc;
+					} 
+			}
+			System.out.printf("budget left: %.2f\n", budgetleft);
+			if (numOfResched == 0) {
+				break;
+			}
+			// update current CP
+			ed = CriticalPath.longestpathlen(workflow.getEntryMod(), workflow.getExitMod(), workflow, currentCP);		
+		}// end while	
+		
+		System.out.printf("ED=%.2f, budget left: %.2f\n", ed, budgetleft);
+		workflow.printSched();
+		
 	}
 
 	/**
@@ -77,6 +140,7 @@ public class CriticalGreedy {
 	 */
 	public static void main(String[] args) {
 		// numerical example
+		/**
 		List <VMtype> testtypes = new ArrayList<VMtype>();
 		VMtype vt1 = new VMtype(0, 1, 3, 1);
 		testtypes.add(vt1);
@@ -92,14 +156,18 @@ public class CriticalGreedy {
 					newtype.getTypeid(), newtype.getCorenum(), newtype.getMaxpower(), newtype.getPrice());
 		}
 		
-		
 		Workflow mytest = new Workflow(false);
 		Workflowreaderlite.readliteworkflow(mytest, 8, 10, 0, false);
 		
 		criticalgreedy(mytest, testtypes, 52);
+		*/
 		
-		// TODO Auto-generated method stub
-
+		List <VMtype> vmtypes = new ArrayList<VMtype>();
+		vmtypes = VmTypesGen.vmTypeList(4);
+		
+		Workflow mytest = new Workflow(false);
+		Workflowreaderlite.readliteworkflow(mytest, 10, 15, 3, false);
+		
+		criticalgreedy(mytest, vmtypes, 7.5);
 	}
-
 }

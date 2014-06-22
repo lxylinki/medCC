@@ -1,7 +1,9 @@
 package utilfunctions;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 
 import taskgraph.Module;
 import taskgraph.Workflow;
@@ -39,7 +41,8 @@ public class CriticalPath {
 	
 	// return longestpath starts with srcMod and ends at dstMod, if no path return null
 	// TODO: need more tests
-	public static double longestpathlen(Module srcMod, Module dstMod, Workflow sortedworkflow) {
+	public static double longestpathlen(Module srcMod, Module dstMod, 
+			Workflow sortedworkflow, List<Module> resultpath) {
 		
 		// check input
 		if (dstMod.getLayer() < srcMod.getLayer()) {
@@ -138,26 +141,34 @@ public class CriticalPath {
 			}	
 		}
 		
-		/**
-		//return resultpath;					
-		List<Cloudlet> resultpath = new ArrayList<Cloudlet>();
-		for (Module mod: sortedworkflow.getModList()) {
+		if (resultpath != null) {
+			double zero = 0.00000001;
 			
-			if ( (mod.getForvisited() == 0) || (mod.getBackvisited()==0)) {
-				continue;
+			// reinitialize
+			if (!(resultpath.isEmpty())) {
+				resultpath = new ArrayList<Module>();
 			}
 			
-			double buf1 = mod.getLst()-mod.getEst();
-			double buf2 = mod.getLft()-mod.getEft();
-			
-			if ( (Math.abs(buf1) < Float.MIN_VALUE) && (Math.abs(buf2) < Float.MIN_VALUE)) {
-				System.out.printf("mod%d\n", mod.getModId());
-				resultpath.add(mod);
-			}
+			for (Module mod: sortedworkflow.getModList()) {
+				if ( (mod.getForvisited() == 0) || (mod.getBackvisited() == 0)) {
+					continue;
+				}				
+				double buf1 = mod.getLst()-mod.getEst();
+				double buf2 = mod.getLft()-mod.getEft();
+				
+				if ( (Math.abs(buf1) < zero) && (Math.abs(buf2) < zero)) {
+					//System.out.printf("CP mod%d\n", mod.getModId());
+					resultpath.add(mod);
+				} 
+				
+				/**
+				else {
+					System.out.printf("mod%d: buf1=%.2f, buf2=%.2f\n", mod.getModId(), buf1, buf2);
+					System.out.println((Math.abs(buf1) < Float.MIN_VALUE));
+					System.out.println((Math.abs(buf2) < Float.MIN_VALUE));
+				}*/
+			}	
 		}
-		return resultpath;	
-		*/
-		
 		return dstMod.getEft();
 	}
 	

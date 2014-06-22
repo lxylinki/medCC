@@ -1,9 +1,9 @@
 package filereaders;
 
 // read workflow files
-public class workflowreader {
+public class Workflowreader {
 
-	public workflowreader() {
+	public Workflowreader() {
 		// TODO Auto-generated constructor stub
 	}
 

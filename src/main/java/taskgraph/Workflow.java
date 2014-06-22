@@ -106,6 +106,12 @@ public class Workflow {
 		
 	}
 	
+	public void printSched() {
+		for (Module mod: this.getModList()) {
+			System.out.printf("mod%d - vmtype%d\n", mod.getModId(), mod.getVmtypeid());
+		}
+	}
+	
 	public List<Module> getModList() {
 		return modList;
 	}

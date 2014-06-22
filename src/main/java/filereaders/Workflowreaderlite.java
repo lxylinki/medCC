@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
 
 import taskgraph.DataTrans;
@@ -107,10 +108,13 @@ public class Workflowreaderlite {
 		readliteworkflow(mytest, 10, 15, 3, false);	
 		
 		
-		Module mods = mytest.getModule(4);
+		Module mods = mytest.getModule(0);
 		Module mode = mytest.getModule(9);
 		CriticalPath.topologicalSort(mytest);
-		double cplen = CriticalPath.longestpathlen(mods, mode, mytest);
+		
+		List<Module> CP = new ArrayList<Module>();
+		System.out.println(CP == null);
+		double cplen = CriticalPath.longestpathlen(mods, mode, mytest, CP);
 		
 		System.out.printf("%.2f\n", cplen);
 		mytest.printTimeInfo();

@@ -4,13 +4,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import filereaders.Workflowreaderlite;
 import taskgraph.Module;
 import taskgraph.Workflow;
 import utilfunctions.CriticalPath;
 import utilfunctions.VmTypesGen;
 import virtualnet.VMtype;
 import vmMap.ScaleStarOrig.blevelComparator;
+import filereaders.Workflowreaderlite;
 
 public class ScaleStarVar {
 	
@@ -24,7 +24,7 @@ public class ScaleStarVar {
 	
 	// set blevel value for mod
 	public static void calcublevel(Module mod, Workflow sortedworkflow) {
-		double blev = CriticalPath.longestpathlen(mod, sortedworkflow.getExitMod(), sortedworkflow);
+		double blev = CriticalPath.longestpathlen(mod, sortedworkflow.getExitMod(), sortedworkflow, null);
 		mod.setBlevel(blev);
 	}
 	
@@ -32,12 +32,10 @@ public class ScaleStarVar {
 	public static void scalestar(Workflow workflow, List<VMtype> vmtypes, double budget) {
 		// number of modules = N
 		int N = workflow.getOrder();
-		int V = vmtypes.size();
 		
 		// profiling: collect mod-vmtype execution info
 		for (VMtype type: vmtypes) {
-			for (int i=1; i<N-1; i++) {
-				Module mod = workflow.getModule(i);
+			for (Module mod: workflow.getModList()) {
 				mod.profiling(type);
 			}
 		}
@@ -48,14 +46,14 @@ public class ScaleStarVar {
 		for (int i=1; i<N-1; i++) {
 			Module mod = workflow.getModule(i);
 			double localmin = Double.MAX_VALUE;
-			mod.printProfiles();
+			//mod.printProfiles();
 			for (VMtype vt: vmtypes) {
 				if (mod.getCostOn(vt) < localmin) {
 					localmin = mod.getCostOn(vt);
 					mod.setVmtype(vt);
 				}
 			}
-			System.out.printf("mod%d - vmtype%d\n", mod.getModId(), mod.getVmtypeid());
+			//System.out.printf("mod%d - vmtype%d\n", mod.getModId(), mod.getVmtypeid());
 			mincost += mod.getCost();
 		}
 		
@@ -77,13 +75,14 @@ public class ScaleStarVar {
 			System.out.printf("Error: budget %.2f below min cost %.2f.\n", budget, mincost);
 			System.exit(1);
 		}
+		
 		System.out.printf("budget %.2f, min cost %.2f, max cost %.2f.\n", budget, mincost, maxcost);	
 				
 		// keep track of current cost
 		double currentCost = mincost;
 		
 		CriticalPath.topologicalSort(workflow);
-		double ed = CriticalPath.longestpathlen(workflow.getEntryMod(), workflow.getExitMod(), workflow);
+		double ed = CriticalPath.longestpathlen(workflow.getEntryMod(), workflow.getExitMod(), workflow, null);
 		System.out.printf("init ED: %.2f, init cost %.2f\n", ed, currentCost);
 		
 		
@@ -95,11 +94,11 @@ public class ScaleStarVar {
 		// larger b-level first
 		Collections.sort( workflow.getModList(), new blevelComparator());
 		
-		
+		/**
 		for (Module mod: workflow.getModList()) {
 			System.out.printf("mod%d, init b-level=%.2f\n", mod.getModId(), mod.getBlevel());
 			System.out.printf("mod%d, init time=%.2f\n", mod.getModId(), mod.getTime());
-		}
+		}*/
 		
 		// reassign new vm types
 		//int N = workflow.getOrder();
@@ -110,7 +109,7 @@ public class ScaleStarVar {
 				Module mod = workflow.getModule(i);
 				
 				double ca1 = CA1(mod, mod.getVmtype(), newtype);				
-				System.out.printf("mod%d on type%d: CA1=%.2f\n", mod.getModId(), newtype.getTypeid(), ca1);
+				//System.out.printf("mod%d on type%d: CA1=%.2f\n", mod.getModId(), newtype.getTypeid(), ca1);
 				if (ca1 > 0) {
 					double costdiff = mod.getCostOn(newtype)-mod.getCost();
 
@@ -123,13 +122,8 @@ public class ScaleStarVar {
 				}
 			}
 		}
-		
-		// update b-level
-		for (Module mod: workflow.getModList()) {
-			calcublevel(mod, workflow);
-		}
-		
-		double med = CriticalPath.longestpathlen(workflow.getEntryMod(), workflow.getExitMod(), workflow);
+
+		double med = CriticalPath.longestpathlen(workflow.getEntryMod(), workflow.getExitMod(), workflow, null);
 		
 		/**
 		for (Module mod: workflow.getModList()) {
@@ -139,11 +133,13 @@ public class ScaleStarVar {
 		}*/
 		
 		System.out.printf("\nED: %.2f, cost %.2f\n", med, currentCost);
+		workflow.printSched();
 	
 	}
 	
 	public static void main(String[] args) {
 		// numerical example
+		/**
 		List <VMtype> testtypes = new ArrayList<VMtype>();
 		VMtype vt1 = new VMtype(0, 1, 3, 1);
 		testtypes.add(vt1);
@@ -156,22 +152,20 @@ public class ScaleStarVar {
 		
 		for (VMtype newtype: testtypes) {
 			System.out.printf("VM type %d: num of cores %d, maxprocpower %.2f, charging rate %.2f\n", 
-					newtype.getTypeid(), newtype.getCorenum(), newtype.getMaxpower(), newtype.getPrice());
-		}
-		
+					newtype.getTypeid(), newtype.getCorenum(), newtype.getMaxpower(), newtype.getPrice());		
 		
 		Workflow mytest = new Workflow(false);
 		Workflowreaderlite.readliteworkflow(mytest, 8, 10, 0, false);
 		
-		scalestar(mytest, testtypes, 59);
-		/**
+		scalestar(mytest, testtypes, 64);
+		*/
+		
 		List <VMtype> vmtypes = new ArrayList<VMtype>();
-		vmtypes = VmTypesGen.vmTypeList(9);
+		vmtypes = VmTypesGen.vmTypeList(4);
 		
 		Workflow mytest = new Workflow(false);
-		workflowreaderlite.readliteworkflow(mytest, 95, 1600, 3, false);
+		Workflowreaderlite.readliteworkflow(mytest, 10, 15, 3, false);
 		
-		scalestar(mytest, vmtypes, 250);
-		*/
+		scalestar(mytest, vmtypes, 8);
 	}
 }

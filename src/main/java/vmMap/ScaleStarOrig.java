@@ -45,13 +45,13 @@ public class ScaleStarOrig {
 	
 	// set blevel value for mod
 	public static void calcublevel(Module mod, Workflow sortedworkflow) {
-		double blev = CriticalPath.longestpathlen(mod, sortedworkflow.getExitMod(), sortedworkflow);
+		double blev = CriticalPath.longestpathlen(mod, sortedworkflow.getExitMod(), sortedworkflow, null);
 		mod.setBlevel(blev);
 	}
 	
 	// set tlevel value for mod
 	public void calcutlevel(Module mod, Workflow sortedworkflow) {
-		double tlev = CriticalPath.longestpathlen(sortedworkflow.getEntryMod(), mod, sortedworkflow);
+		double tlev = CriticalPath.longestpathlen(sortedworkflow.getEntryMod(), mod, sortedworkflow, null);
 		mod.setTlevel(tlev);
 	}
 	
@@ -91,8 +91,7 @@ public class ScaleStarOrig {
 		
 		// profiling: collect mod-vmtype execution info
 		for (VMtype type: vmtypes) {
-			for (int i=1; i<N-1; i++) {
-				Module mod = workflow.getModule(i);
+			for (Module mod: workflow.getModList()) {
 				mod.profiling(type);
 			}
 		}
@@ -258,8 +257,9 @@ public class ScaleStarOrig {
 			}
 		}
 		
-		double ed = CriticalPath.longestpathlen(workflow.getEntryMod(), workflow.getExitMod(), workflow);
+		double ed = CriticalPath.longestpathlen(workflow.getEntryMod(), workflow.getExitMod(), workflow, null);
 		System.out.printf("\nED: %.2f, cost %.2f\n", ed, currentCost);
+		workflow.printSched();
 		
 	}
 
@@ -268,6 +268,7 @@ public class ScaleStarOrig {
 	 */
 	public static void main(String[] args) {
 		// numerical example
+		/**
 		List <VMtype> testtypes = new ArrayList<VMtype>();
 		VMtype vt1 = new VMtype(0, 1, 3, 1);
 		testtypes.add(vt1);
@@ -288,14 +289,15 @@ public class ScaleStarOrig {
 		Workflowreaderlite.readliteworkflow(mytest, 8, 10, 0, false);
 		
 		scalestar(mytest, testtypes, 58);
+		*/
 		
-		/**
+		
 		List <VMtype> vmtypes = new ArrayList<VMtype>();
-		vmtypes = VmTypesGen.vmTypeList(7);
+		vmtypes = VmTypesGen.vmTypeList(4);
 		Workflow mytest = new Workflow(false);
 		Workflowreaderlite.readliteworkflow(mytest, 10, 15, 3, false);
-		scalestar(mytest, vmtypes, 5.69);
-		*/
+		scalestar(mytest, vmtypes, 7);
+		
 	}
 
 }

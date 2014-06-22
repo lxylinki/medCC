@@ -13,7 +13,7 @@ public class VmTypesGen {
 	// charging rate of one unit
 	private static double baseprice = 0.08;
 	
-	// automatically generate a set of types
+	// list of types increasing in procpower and price
 	public static List<VMtype> vmTypeList(int numOfTypes) {
 		List <VMtype> types = new ArrayList<VMtype>();
 		
