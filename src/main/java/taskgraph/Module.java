@@ -58,7 +58,7 @@ public class Module extends Cloudlet {
 	private double tlevel = 0;
 	
 	// parallel factor
-	private double alpha = 1.0;
+	private double alpha = 1;
 	
 	// sched related
 	private int vmtypeid = -1;
@@ -70,7 +70,7 @@ public class Module extends Cloudlet {
 	private int rescheduled = 0;
 	
 	// execution info on all types
-	private HashMap<VMtype, execInfo> mappings = null;
+	private HashMap<VMtype, execInfo> profiles = null;
 	
 	/**
 	 * @param cloudletId
@@ -87,27 +87,23 @@ public class Module extends Cloudlet {
 		// exec by procpower 1
 		setTime(getWorkload());
 		setMappings(new HashMap<VMtype, execInfo>());
-
 	}
 	
 	// execution time 
-	public double execTime( VMtype vmtype )
+	private double execTime( VMtype vmtype )
 	{
-		long workload = this.getWorkload(); 		
-		// count alpha factor
-		double alpha = this.getAlpha();
-		int vcpu = vmtype.getCorenum();
-		double unitpp = vmtype.getUnitprocpower();		
-		double exectime = ( workload / unitpp );
+		double workload = this.getWorkload();
 		
-		if (vcpu > 1) {
-			exectime = ( exectime * alpha ) / vcpu + exectime * ( 1 - alpha );
-		}				
-		return exectime;
+		if (vmtype.getCorenum() > 1) {
+			return ( workload*this.getAlpha()/vmtype.getMaxpower() + 
+					workload*(1-this.getAlpha())/vmtype.getUnitprocpower());
+		} else {
+			return ( workload/vmtype.getUnitprocpower() );
+		}
 	}
 	
 	// the execution information on a vm type
-	public static class execInfo  {
+	private static class execInfo  {
 		int typeid;
 		double execTime;		
 		double execCost;
@@ -119,11 +115,47 @@ public class Module extends Cloudlet {
 		}
 	}
 	
+	// profile execution info on each type
+	public void profiling(VMtype type) {
+		int typeid = type.getTypeid();
+		double exectime = this.execTime(type);
+		double execcost = type.getPrice()*(Math.ceil(exectime));
+		// execInfo
+		execInfo info = new execInfo(typeid, exectime, execcost);
+		this.profiles.put(type, info);
+	}
+	
+	// print mapping contents
+	public void printProfiles() {
+		if (this.profiles.isEmpty()) {
+			System.out.println("This mod has no profile info yet.\n");
+		}
+		for (VMtype type: this.profiles.keySet()) {
+			int id = this.profiles.get(type).typeid;
+			double time = this.profiles.get(type).execTime;
+			double cost = this.profiles.get(type).execCost;
+			System.out.printf( "mod %d exec on vmtype %d: time=%.2f, cost=%.2f\n", 
+					this.getModId(), id, time, cost);
+		}
+	}
+	
 	public void initTime() {
 		this.setEst(0);
 		this.setEft(0);
 		this.setLst(0);
 		this.setLft(0);
+	}
+	
+	// lookup in the profile map
+	public double getCostOn(VMtype type) {
+		double cost = this.profiles.get(type).execCost;
+		return cost;
+	}
+	
+	// lookup in the profile map
+	public double getTimeOn(VMtype type) {
+		double time = this.profiles.get(type).execTime;
+		return time;
 	}
 	
 	public void addSucMod(Module mod) {
@@ -330,9 +362,12 @@ public class Module extends Cloudlet {
 		return vmtype;
 	}
 
+	// actually map to a type
 	public void setVmtype(VMtype vmtype) {
 		this.vmtype = vmtype;
 		this.setVmtypeid(vmtype.getTypeid());
+		this.setTime(this.profiles.get(vmtype).execTime);
+		this.setCost(this.profiles.get(vmtype).execCost);
 	}
 
 	public int getVmtypeid() {
@@ -351,12 +386,12 @@ public class Module extends Cloudlet {
 		this.rescheduled = rescheduled;
 	}
 
-	public HashMap<VMtype, execInfo> getMappings() {
-		return mappings;
+	public HashMap<VMtype, execInfo> getProfiles() {
+		return profiles;
 	}
 
-	public void setMappings(HashMap<VMtype, execInfo> mappings) {
-		this.mappings = mappings;
+	public void setMappings(HashMap<VMtype, execInfo> profiles) {
+		this.profiles = profiles;
 	}
 
 }

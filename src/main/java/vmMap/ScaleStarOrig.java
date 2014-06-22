@@ -10,7 +10,7 @@ import taskgraph.Workflow;
 import utilfunctions.CriticalPath;
 import utilfunctions.VmTypesGen;
 import virtualnet.VMtype;
-import filereaders.workflowreaderlite;
+import filereaders.Workflowreaderlite;
 
 public class ScaleStarOrig {
 	
@@ -24,26 +24,18 @@ public class ScaleStarOrig {
 	}
 
 	
-	// cost of exec mod on vmtype
-	public static double calcuCost(Module mod, VMtype vmtype) {
-		double exectime = Math.ceil(mod.execTime(vmtype));
-		double cost = exectime*(vmtype.getPrice());
-		return cost;
-	}
-	
-	
+	// comparative advantage
 	public static double CA1(Module mod, VMtype vmtype1, VMtype vmtype2) {
-		double costdiffrate = (calcuCost(mod, vmtype2) - calcuCost(mod, vmtype1))/calcuCost(mod, vmtype1);
-		double timediffrate = (mod.execTime(vmtype2)-mod.execTime(vmtype1))/mod.execTime(vmtype1);
+		double costdiffrate = (mod.getCostOn(vmtype2) - mod.getCostOn(vmtype1))/mod.getCostOn(vmtype1);
+		double timediffrate = (mod.getTimeOn(vmtype2) - mod.getTimeOn(vmtype1))/mod.getTimeOn(vmtype1);
 		double ca1value = costdiffrate + timediffrate;
 		return ca1value;
 	}
 	
-	
 	// vmtype2 is newer type
 	public static double CA2(Module mod, VMtype vmtype1, VMtype vmtype2) {
-		double timediff = mod.execTime(vmtype2)-mod.execTime(vmtype1);
-		double costdiff = calcuCost(mod, vmtype1)-calcuCost(mod, vmtype2);
+		double timediff = mod.getTimeOn(vmtype2)-mod.getTimeOn(vmtype1);
+		double costdiff = mod.getCostOn(vmtype2)-mod.getCostOn(vmtype1);
 		if ((costdiff <= 0) || (timediff > 0)) {
 			return 0;
 		} else {
@@ -94,12 +86,24 @@ public class ScaleStarOrig {
 	
 	// ScaleStar main algorithm
 	public static void scalestar(Workflow workflow, List<VMtype> vmtypes, double budget) {
+		// number of modules = N
+		int N = workflow.getOrder();
 		
-		for (Module mod: workflow.getModList()) {
+		// profiling: collect mod-vmtype execution info
+		for (VMtype type: vmtypes) {
+			for (int i=1; i<N-1; i++) {
+				Module mod = workflow.getModule(i);
+				mod.profiling(type);
+			}
+		}
+		
+		
+		for (int i=1; i<N-1; i++) {
+			Module mod = workflow.getModule(i);
 			// init label with avg exec time
 			double avgtime = 0;
 			for (VMtype type: vmtypes) {
-				avgtime += mod.execTime(type);
+				avgtime += mod.getTimeOn(type);
 			}
 			avgtime = avgtime / (vmtypes.size());
 			mod.setTime(avgtime);			
@@ -120,7 +124,6 @@ public class ScaleStarOrig {
 		
 		// build array A
 		Aij[][] arrayA;
-		int N = workflow.getOrder();
 		int V = vmtypes.size();
 		arrayA = new Aij[N][V];	
 		
@@ -146,17 +149,9 @@ public class ScaleStarOrig {
 				if (CA1a > CA1b) {
 					// change to type vprime
 					mod.setVmtype(vprime);
-					// this is makespanNew
-					double makespannew = mod.execTime(vprime);
-					mod.setTime(makespannew);
-					mod.setCost(calcuCost(mod, vprime));
 				} else {
 					// set to vmj
 					mod.setVmtype(vmj);
-					// this is makespanOld
-					double makespanold = mod.execTime(vmj);
-					mod.setTime(makespanold);
-					mod.setCost(calcuCost(mod, vmj));
 				}
 				
 			}
@@ -184,7 +179,7 @@ public class ScaleStarOrig {
 		for (int j=0; j<V; j++) {
 			
 			for (int i=1; i<N-1; i++) {
-				System.out.printf("A[%d][%d] = %.2f ", i, j, arrayA[i][j].val);
+				//System.out.printf("A[%d][%d] = %.2f ", i, j, arrayA[i][j].val);
 				
 				if (arrayA[i][j].val != 0) {
 					setA.add(arrayA[i][j]);
@@ -218,13 +213,10 @@ public class ScaleStarOrig {
 				Module modi = workflow.getModule(modid);
 				VMtype typej = vmtypes.get(typeid);
 				
-				double costdiff = calcuCost(modi, typej) - modi.getCost();
+				double costdiff = modi.getCostOn(typej) - modi.getCost();
 				if (costdiff <= 0) {
 					// reassign
 					modi.setVmtype(typej);
-					double timeonj = modi.execTime(typej);
-					modi.setTime(timeonj);
-					modi.setCost(calcuCost(modi, typej));
 				}
 				
 				// remove element
@@ -239,14 +231,11 @@ public class ScaleStarOrig {
 				Module modi = workflow.getModule(modid);
 				VMtype typej = vmtypes.get(typeid);
 				
-				double costdiff = calcuCost(modi, typej) - modi.getCost();
+				double costdiff = modi.getCostOn(typej) - modi.getCost();
 				currentCost += costdiff;
 				if (currentCost <= budget ) {
 					// reassign
 					modi.setVmtype(typej);
-					double timeonj = modi.execTime(typej);
-					modi.setTime(timeonj);
-					modi.setCost(calcuCost(modi, typej));
 				}
 				
 				// remove element
@@ -261,11 +250,9 @@ public class ScaleStarOrig {
 			// use chepest mapping
 			VMtype mintype = vmtypes.get(0);
 			
-			for (Module mod: workflow.getModList()) {
+			for (int i=1; i<N-1; i++) {
+				Module mod = workflow.getModule(i);
 				mod.setVmtype(mintype);
-				double maxtime = mod.execTime(mintype);
-				mod.setTime(maxtime);
-				mod.setCost(calcuCost(mod, mintype));
 				currentCost += mod.getCost();
 				System.out.printf("mod %d --- vmtype %d\n", mod.getModId(), mod.getVmtypeid());
 			}
@@ -280,11 +267,35 @@ public class ScaleStarOrig {
 	 * @param args
 	 */
 	public static void main(String[] args) {
+		// numerical example
+		List <VMtype> testtypes = new ArrayList<VMtype>();
+		VMtype vt1 = new VMtype(0, 1, 3, 1);
+		testtypes.add(vt1);
+		
+		VMtype vt2 = new VMtype(1, 5, 3, 0.8);
+		testtypes.add(vt2);
+		
+		VMtype vt3 = new VMtype(2, 10, 3, 0.8);
+		testtypes.add(vt3);
+		
+		for (VMtype newtype: testtypes) {
+			System.out.printf("VM type %d: num of cores %d, maxprocpower %.2f, charging rate %.2f\n", 
+					newtype.getTypeid(), newtype.getCorenum(), newtype.getMaxpower(), newtype.getPrice());
+		}
+		
+		
+		Workflow mytest = new Workflow(false);
+		Workflowreaderlite.readliteworkflow(mytest, 8, 10, 0, false);
+		
+		scalestar(mytest, testtypes, 58);
+		
+		/**
 		List <VMtype> vmtypes = new ArrayList<VMtype>();
 		vmtypes = VmTypesGen.vmTypeList(7);
 		Workflow mytest = new Workflow(false);
-		workflowreaderlite.readliteworkflow(mytest, 10, 15, 3, false);
+		Workflowreaderlite.readliteworkflow(mytest, 10, 15, 3, false);
 		scalestar(mytest, vmtypes, 5.69);
+		*/
 	}
 
 }

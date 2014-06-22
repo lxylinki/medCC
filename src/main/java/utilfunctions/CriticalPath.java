@@ -54,6 +54,7 @@ public class CriticalPath {
 			if (mod.getLayer() > dstMod.getLayer()) {
 				break;
 			}
+			
 			// skip modules prior to srcMod
 			if (mod.getLayer() < srcMod.getLayer()) {
 				mod.setForvisited(0);
