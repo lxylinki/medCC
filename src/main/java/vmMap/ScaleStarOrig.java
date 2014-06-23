@@ -12,6 +12,11 @@ import utilfunctions.VmTypesGen;
 import virtualnet.VMtype;
 import filereaders.Workflowreaderlite;
 
+/**
+ * 
+ * @author Linki
+ *
+ */
 public class ScaleStarOrig {
 	
 	// sort in decreasing order of blevel
@@ -83,17 +88,9 @@ public class ScaleStarOrig {
 	}
 	
 	// ScaleStar main algorithm
-	public static void scalestar(Workflow workflow, List<VMtype> vmtypes, double budget) {
+	public static double scalestar(Workflow workflow, List<VMtype> vmtypes, double budget) {
 		// number of modules = N
-		int N = workflow.getOrder();
-		
-		// profiling: collect mod-vmtype execution info
-		for (VMtype type: vmtypes) {
-			for (Module mod: workflow.getModList()) {
-				mod.profiling(type);
-			}
-		}
-		
+		int N = workflow.getOrder();		
 		for (int i=1; i<N-1; i++) {
 			Module mod = workflow.getModule(i);
 			// init label with avg exec time
@@ -102,6 +99,8 @@ public class ScaleStarOrig {
 				avgtime += mod.getTimeOn(type);
 			}
 			avgtime = avgtime / (vmtypes.size());
+			// init sched info
+			mod.setVmtype(null);
 			mod.setTime(avgtime);			
 		}
 		
@@ -253,7 +252,7 @@ public class ScaleStarOrig {
 		
 		if (currentCost > budget) {
 			currentCost = 0;
-			System.out.println("Cost exceeds budget.\n");
+			//System.out.println("Cost exceeds budget.\n");
 			// use chepest mapping
 			VMtype mintype = vmtypes.get(0);
 			
@@ -266,10 +265,9 @@ public class ScaleStarOrig {
 		}
 		
 		double ed = CriticalPath.longestpathlen(workflow.getEntryMod(), workflow.getExitMod(), workflow, null);
-		workflow.printSched();
-		System.out.printf("ED: %.2f, cost %.2f\n", ed, currentCost);
-		
-		
+		//workflow.printSched();
+		//System.out.printf("ED: %.2f, cost %.2f\n", ed, currentCost);
+		return ed;		
 	}
 
 	/**
@@ -302,10 +300,18 @@ public class ScaleStarOrig {
 		
 		List <VMtype> vmtypes = new ArrayList<VMtype>();
 		vmtypes = VmTypesGen.vmTypeList(5);
-		Workflow mytest = new Workflow(false);
-		Workflowreaderlite.readliteworkflow(mytest, 20, 80, 6, false);
-		scalestar(mytest, vmtypes, 10);
+		Workflow workflow = new Workflow(false);
+		Workflowreaderlite.readliteworkflow(workflow, 20, 80, 6, false);
 		
+		// profiling: collect mod-vmtype execution info
+		for (VMtype type: vmtypes) {
+			for (Module mod: workflow.getModList()) {
+				mod.profiling(type);
+			}
+		}
+
+		double ed = scalestar(workflow, vmtypes, 10);
+		System.out.printf("ED=%.2f\n", ed);		
 	}
 
 }

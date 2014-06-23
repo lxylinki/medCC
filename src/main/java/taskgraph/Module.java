@@ -58,7 +58,7 @@ public class Module extends Cloudlet {
 	private double tlevel = 0;
 	
 	// parallel factor
-	private double alpha = 1;
+	private double alpha = 0.8;
 	
 	// sched related
 	private int vmtypeid = -1;
@@ -364,10 +364,18 @@ public class Module extends Cloudlet {
 
 	// actually map to a type
 	public void setVmtype(VMtype vmtype) {
-		this.vmtype = vmtype;
-		this.setVmtypeid(vmtype.getTypeid());
-		this.setTime(this.profiles.get(vmtype).execTime);
-		this.setCost(this.profiles.get(vmtype).execCost);
+		if (vmtype != null) {
+			this.vmtype = vmtype;
+			this.setVmtypeid(vmtype.getTypeid());
+			this.setTime(this.profiles.get(vmtype).execTime);
+			this.setCost(this.profiles.get(vmtype).execCost);
+		} else {
+			this.vmtype = null;
+			this.setVmtypeid(-1);
+			this.setTime(0);
+			this.setCost(0);
+		}
+
 	}
 
 	public int getVmtypeid() {
