@@ -3,14 +3,13 @@ package evaluations;
 import java.util.ArrayList;
 import java.util.List;
 
-import vmMap.CriticalGreedy;
-import vmMap.ScaleStarOrig;
-
 import taskgraph.Module;
 import taskgraph.Workflow;
 import utilfunctions.CriticalPath;
 import utilfunctions.VmTypesGen;
 import virtualnet.VMtype;
+import vmMap.CriticalGreedy;
+import vmMap.ScaleStar;
 import filereaders.Workflowreaderlite;
 
 /**
@@ -90,13 +89,14 @@ public class CostConstrMed {
 		double maxdelay = CriticalPath.longestpathlen(workflow.getEntryMod(), workflow.getExitMod(), workflow, null);
 		System.out.printf("Max delay %.2f\n", maxdelay);		
 		
-		
 		double budgetInc = (maxcost-mincost)/budgetlevels;	
 		for (int i=0; i<budgetlevels; i++) {
 			double budget = mincost + (i*budgetInc);
-			double ss = ScaleStarOrig.scalestar(workflow, vmtypes, budget);
+			// add algs here
+			double ss = ScaleStar.scalestar(workflow, vmtypes, budget);
 			double cg = CriticalGreedy.criticalgreedy(workflow, vmtypes, budget);
-			System.out.printf("bud %.2f: CG %.2f\tSS %.2f\n", budget, cg, ss);
+			double imp = (ss - cg)/ss;
+			System.out.printf("cost %.2f:\tCG %.2f\tSS %.2f\tImp %.2f\n", budget, cg, ss, imp);
 		}
 		
 	}
@@ -106,9 +106,9 @@ public class CostConstrMed {
 	 */
 	public static void main(String[] args) {
 		List <VMtype> vmtypes = new ArrayList<VMtype>();
-		vmtypes = VmTypesGen.vmTypeList(5);
+		vmtypes = VmTypesGen.vmTypeList(8);
 		Workflow mytest = new Workflow(false);
-		Workflowreaderlite.readliteworkflow(mytest, 20, 80, 6, false);
+		Workflowreaderlite.readliteworkflow(mytest, 80, 1200, 0, false);
 		varBudgetLevel(mytest, vmtypes);
 	}
 

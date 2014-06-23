@@ -18,7 +18,7 @@ import virtualnet.VMtype;
  */
 public class CriticalGreedy {
 	
-	public static VMtype selectNewType(Module mod, double budgetleft, List<VMtype> vmtypes) {
+	public static VMtype selectByTimedec(Module mod, double budgetleft, List<VMtype> vmtypes) {
 		VMtype newtype = null;
 		double timedecmax = Double.MIN_VALUE;
 		
@@ -118,8 +118,8 @@ public class CriticalGreedy {
 		
 		//workflow.printStructInfo();
 		//workflow.printTimeInfo();
-		
-		while (budgetleft >= 0) {
+		int CPchange = 0;
+		while (budgetleft >= 0) {			
 			// number of new reschedules
 			double numOfResched = 0;
 			double maxtimedecOnCP = 0;
@@ -127,16 +127,17 @@ public class CriticalGreedy {
 			// resched one mod per new CP
 			int targetModId = -1;
 			int targetVmtypeId = -1;
-			
+
 			// modules on CP
 			for(Module mod: currentCP) {
-				
+
 				// skip entry/exit mod
 				if (mod.getPreMods().isEmpty() || mod.getSucMods().isEmpty()) {
 					continue;
 				}
+				
 				//System.out.printf("checking critical mod%d\n", mod.getModId());
-				VMtype newtype = selectNewType(mod, budgetleft, vmtypes);
+				VMtype newtype = selectByTimedec(mod, budgetleft, vmtypes);
 				
 					if (newtype != null) {
 						//System.out.printf("If reschedule mod%d to vmtype%d\n", mod.getModId(), newtype.getTypeid());
@@ -150,10 +151,11 @@ public class CriticalGreedy {
 						}
 					} 
 			}
-			// no more resched found
+			// no more resched found this round
 			if (numOfResched == 0) {
-				break;
+				break;				
 			}
+			
 			
 			Module targetMod = workflow.getModule(targetModId);
 			VMtype targetVmtype = vmtypes.get(targetVmtypeId);
@@ -169,11 +171,11 @@ public class CriticalGreedy {
 			
 			// update current CP
 			ed = CriticalPath.longestpathlen(workflow.getEntryMod(), workflow.getExitMod(), workflow, currentCP);
-			
+			CPchange++;
 		}// end while
 		
 		//workflow.printSched();
-		//System.out.printf("ED=%.2f, budget left: %.2f\n", ed, budgetleft);
+		System.out.printf("ED=%.2f, budget left: %.2f, CP changed %d times.\n", ed, budgetleft, CPchange);
 		return ed;		
 	}
 
@@ -205,10 +207,10 @@ public class CriticalGreedy {
 		*/
 		
 		List <VMtype> vmtypes = new ArrayList<VMtype>();
-		vmtypes = VmTypesGen.vmTypeList(5);
+		vmtypes = VmTypesGen.vmTypeList(8);
 		
 		Workflow workflow = new Workflow(false);
-		Workflowreaderlite.readliteworkflow(workflow, 20, 80, 6, false);
+		Workflowreaderlite.readliteworkflow(workflow, 80, 1200, 0, false);
 		
 		// profiling: collect mod-vmtype execution info
 		for (VMtype type: vmtypes) {
@@ -216,7 +218,8 @@ public class CriticalGreedy {
 				mod.profiling(type);
 			}
 		}		
-		double ed = criticalgreedy(workflow, vmtypes, 10);
+		double ed = criticalgreedy(workflow, vmtypes, 124);
+		workflow.printSched();
 		System.out.printf("ED=%.2f\n", ed);
 	}
 }

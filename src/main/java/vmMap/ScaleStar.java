@@ -17,7 +17,7 @@ import filereaders.Workflowreaderlite;
  * @author Linki
  *
  */
-public class ScaleStarOrig {
+public class ScaleStar {
 	
 	// sort in decreasing order of blevel
 	static class blevelComparator implements Comparator<Module> {
@@ -169,6 +169,7 @@ public class ScaleStarOrig {
 			}
 		}
 		
+		// code in this alg from here is rarely utilized
 		for (int j=0; j<V; j++) {
 			VMtype vmj = vmtypes.get(j);
 
@@ -187,6 +188,7 @@ public class ScaleStarOrig {
 			}
 		}	
 		
+		
 		// collect non-zero values in arrayA
 		List<Aij> setA = new ArrayList<Aij>();
 		for (int j=0; j<V; j++) {
@@ -198,9 +200,7 @@ public class ScaleStarOrig {
 				}
 			}
 			//System.out.print("\n");
-		}		
-
-		
+		}	
 		
 		// sort setA in increasing order of ca2val
 		if (setA.size() > 0) {
@@ -299,9 +299,9 @@ public class ScaleStarOrig {
 		*/
 		
 		List <VMtype> vmtypes = new ArrayList<VMtype>();
-		vmtypes = VmTypesGen.vmTypeList(5);
+		vmtypes = VmTypesGen.vmTypeList(8);
 		Workflow workflow = new Workflow(false);
-		Workflowreaderlite.readliteworkflow(workflow, 20, 80, 6, false);
+		Workflowreaderlite.readliteworkflow(workflow, 80, 1200, 0, false);
 		
 		// profiling: collect mod-vmtype execution info
 		for (VMtype type: vmtypes) {
@@ -310,7 +310,8 @@ public class ScaleStarOrig {
 			}
 		}
 
-		double ed = scalestar(workflow, vmtypes, 10);
+		double ed = scalestar(workflow, vmtypes, 124);
+		workflow.printSched();
 		System.out.printf("ED=%.2f\n", ed);		
 	}
 

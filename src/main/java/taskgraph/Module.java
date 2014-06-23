@@ -58,7 +58,7 @@ public class Module extends Cloudlet {
 	private double tlevel = 0;
 	
 	// parallel factor
-	private double alpha = 0.8;
+	private double alpha = 0.85;
 	
 	// sched related
 	private int vmtypeid = -1;
