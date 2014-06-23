@@ -72,8 +72,6 @@ public class ScaleStarOrig {
 			this.val = ca2;
 		}
 	}
-	
-	
 
 	// sort in increasing order of ca2 value
 	static class aijComparator implements Comparator<Aij> {
@@ -302,12 +300,11 @@ public class ScaleStarOrig {
 		scalestar(mytest, testtypes, 58);
 		*/
 		
-		
 		List <VMtype> vmtypes = new ArrayList<VMtype>();
-		vmtypes = VmTypesGen.vmTypeList(6);
+		vmtypes = VmTypesGen.vmTypeList(5);
 		Workflow mytest = new Workflow(false);
-		Workflowreaderlite.readliteworkflow(mytest, 40, 500, 2, false);
-		scalestar(mytest, vmtypes, 42);
+		Workflowreaderlite.readliteworkflow(mytest, 20, 80, 6, false);
+		scalestar(mytest, vmtypes, 10);
 		
 	}
 
