@@ -47,6 +47,8 @@ public class Module extends Cloudlet {
 	
 	private double lft = 0;
 	
+	private double buffertime = 0;
+	
 	private int forvisited = 0;
 	
 	private int backvisited = 0;
@@ -144,6 +146,7 @@ public class Module extends Cloudlet {
 		this.setEft(0);
 		this.setLst(0);
 		this.setLft(0);
+		this.setBuffertime(0);
 	}
 	
 	// lookup in the profile map
@@ -157,6 +160,7 @@ public class Module extends Cloudlet {
 		double time = this.profiles.get(type).execTime;
 		return time;
 	}
+	
 	
 	public void addSucMod(Module mod) {
 		this.sucMods.add(mod);
@@ -400,6 +404,14 @@ public class Module extends Cloudlet {
 
 	public void setMappings(HashMap<VMtype, execInfo> profiles) {
 		this.profiles = profiles;
+	}
+
+	public double getBuffertime() {
+		return buffertime;
+	}
+
+	public void setBuffertime(double buffertime) {
+		this.buffertime = buffertime;
 	}
 
 }

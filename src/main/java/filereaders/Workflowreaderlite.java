@@ -29,7 +29,8 @@ public class Workflowreaderlite {
 			}
 		}
 		
-		String dirprefix = "src/main/resources/input/workflowdata2012/Cases/";
+		//String dirprefix = "src/main/resources/input/workflowdata2012/Cases/";
+		String dirprefix = "src/main/resources/input/workflowdata2012/";
 		String fileformat = ".txt";
 		String filename;
 		

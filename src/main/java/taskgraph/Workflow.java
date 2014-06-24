@@ -3,6 +3,8 @@ package taskgraph;
 import java.util.ArrayList;
 import java.util.List;
 
+import utilfunctions.CriticalPath;
+
 public class Workflow {
 
 	private List<Module> modList = null;	
@@ -58,9 +60,9 @@ public class Workflow {
 		if (this.getModList() != null) {
 			for (Module mod: this.getModList()) {
 				System.out.printf("mod%d est:  %.2f,  eft: %.2f,  lst: %.2f,  lft: %.2f; " +
-						"f: %d, b %d times\n", 
+						"f: %d, b %d times, buffer: %.2f\n", 
 						mod.getModId(), mod.getEst(), mod.getEft(), mod.getLst(), mod.getLft(), 
-						mod.getForvisited(), mod.getBackvisited());
+						mod.getForvisited(), mod.getBackvisited(), mod.getBuffertime());
 			}
 		}
 	}
@@ -111,6 +113,29 @@ public class Workflow {
 			System.out.printf("mod%d - vmtype%d\n", mod.getModId(), mod.getVmtypeid());
 		}
 	}
+	
+	public void printCost() {
+		double cost = 0;
+		for (Module mod: this.getModList()) {
+			cost += mod.getCost();
+		}
+		System.out.printf("Total cost: %.2f\n", cost);
+	}
+	
+	public double getCost() {
+		double cost = 0;
+		for (Module mod: this.getModList()) {
+			cost += mod.getCost();
+		}
+		return cost;
+	}
+	
+	public double getEd() {
+		CriticalPath.topologicalSort(this);
+		double ed = CriticalPath.longestpathlen(getEntryMod(), getExitMod(), this, null);
+		return ed;
+	}
+	
 	
 	public List<Module> getModList() {
 		return modList;

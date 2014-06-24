@@ -158,8 +158,11 @@ public class CriticalPath {
 				
 				if ( (Math.abs(buf1) < zero) && (Math.abs(buf2) < zero)) {
 					//System.out.printf("CP mod%d\n", mod.getModId());
+					mod.setCritical(true);
 					resultpath.add(mod);
-				} 
+				} else {
+					mod.setCritical(false);
+				}
 				
 				/**
 				else {

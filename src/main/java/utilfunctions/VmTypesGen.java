@@ -8,10 +8,10 @@ import virtualnet.VMtype;
 public class VmTypesGen {
 
 	// unit processing power in a VM
-	private static int basemips = 30;
+	private static int basemips = 10;
 	
 	// charging rate of one unit
-	private static double baseprice = 0.08;
+	private static double baseprice = 0.01;
 	
 	// list of types increasing in procpower and price
 	public static List<VMtype> vmTypeList(int numOfTypes) {
@@ -26,6 +26,7 @@ public class VmTypesGen {
 				newtype = new VMtype(i, 1, basemips, baseprice);
 			} else {
 				newtype = new VMtype(i, 2*i, basemips, baseprice);
+				//newtype = new VMtype(i, (int) (Math.pow(2, i)), basemips, baseprice);
 			}
 			/**
 			System.out.printf("VM type %d: num of cores %d, maxprocpower %.2f, charging rate %.2f\n", 

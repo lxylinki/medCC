@@ -5,12 +5,10 @@ import java.util.List;
 
 import taskgraph.Module;
 import taskgraph.Workflow;
-import utilfunctions.CriticalPath;
 import utilfunctions.VmTypesGen;
 import virtualnet.VMtype;
-import vmMap.BHEFT;
-import vmMap.CG;	
-import vmMap.ScaleStar;
+import vmMap.CGrev;
+import vmMap.CGvar;
 import filereaders.Workflowreaderlite;
 
 /**
@@ -74,8 +72,7 @@ public class CostConstrMed {
 			mod.setVmtype(null);
 			mod.setVmtype(vprime);
 		}
-		CriticalPath.topologicalSort(workflow);
-		double mindelay = CriticalPath.longestpathlen(workflow.getEntryMod(), workflow.getExitMod(), workflow, null);
+		double mindelay = workflow.getEd();
 		//workflow.printSched();
 		System.out.printf("Min delay %.2f\n", mindelay);
 		
@@ -86,23 +83,31 @@ public class CostConstrMed {
 			mod.setVmtype(null);
 			mod.setVmtype(vbasic);
 		}		
-		
-		double maxdelay = CriticalPath.longestpathlen(workflow.getEntryMod(), workflow.getExitMod(), workflow, null);
+		double maxdelay = workflow.getEd();
 		System.out.printf("Max delay %.2f\n", maxdelay);		
 		
 		double budgetInc = (maxcost-mincost)/budgetlevels;	
-		for (int i=0; i<budgetlevels; i++) {
+		for (int i=1; i<=budgetlevels; i++) {
 			double budget = mincost + (i*budgetInc);
 			// add algs here
-			double ss = ScaleStar.scalestar(workflow, vmtypes, budget);
-			double cg = CG.criticalgreedy(workflow, vmtypes, budget);
-			double bheft = BHEFT.bheft(workflow, vmtypes, budget);
+			double cgvar = CGvar.criticalgreedy(workflow, vmtypes, budget);
+			double cgrev = CGrev.criticalgreedy(workflow, vmtypes, budget);
+			//double ss = ScaleStar.scalestar(workflow, vmtypes, budget);
+			//double bheft = BHEFT.bheft(workflow, vmtypes, budget);
+			
 			//double imp = (ss - cg)/ss;
-			double otherimp = (ss - bheft)/ss;
+			double imp = (cgvar - cgrev)/cgvar;
+			//double otherimp = (ss - bheft)/ss;
+			
 			//System.out.printf("cost %.2f:\tCG %.2f\tSS %.2f\tImp %.2f\n", budget, cg, ss, imp);
-			System.out.printf("cost %.2f:\tBHEFT %.2f\tSS %.2f\tImp %.2f\n", budget, bheft, ss, otherimp);
+			System.out.printf("cost %.2f:\tVar %.2f\tRev %.2f\tImp %.2f\tUtil %.2f\n", budget, cgvar, cgrev, imp,
+					workflow.getCost()/budget);
+			
+			//System.out.printf("cost %.2f:\tBHEFT %.2f\tSS %.2f\tImp %.2f\tutil %.2f\n", budget, bheft, ss, otherimp, 
+			//		workflow.getCost()/budget);
+			
+			//System.out.printf("Ed %.2f\tUtil %.2f\n", cg, workflow.getCost()/budget);
 		}
-		
 	}
 
 	/**
@@ -110,9 +115,9 @@ public class CostConstrMed {
 	 */
 	public static void main(String[] args) {
 		List <VMtype> vmtypes = new ArrayList<VMtype>();
-		vmtypes = VmTypesGen.vmTypeList(8);
+		vmtypes = VmTypesGen.vmTypeList(14);
 		Workflow mytest = new Workflow(false);
-		Workflowreaderlite.readliteworkflow(mytest, 80, 1200, 0, false);
+		Workflowreaderlite.readliteworkflow(mytest, 50, 500, 2, false);
 		varBudgetLevel(mytest, vmtypes);
 	}
 

@@ -55,7 +55,7 @@ public class ScaleStar {
 	}
 	
 	// set tlevel value for mod
-	public void calcutlevel(Module mod, Workflow sortedworkflow) {
+	public static void calcutlevel(Module mod, Workflow sortedworkflow) {
 		double tlev = CriticalPath.longestpathlen(sortedworkflow.getEntryMod(), mod, sortedworkflow, null);
 		mod.setTlevel(tlev);
 	}
@@ -264,7 +264,7 @@ public class ScaleStar {
 			}
 		}
 		
-		double ed = CriticalPath.longestpathlen(workflow.getEntryMod(), workflow.getExitMod(), workflow, null);
+		double ed = workflow.getEd();
 		//workflow.printSched();
 		//System.out.printf("ED: %.2f, cost %.2f\n", ed, currentCost);
 		return ed;		
@@ -299,9 +299,9 @@ public class ScaleStar {
 		*/
 		
 		List <VMtype> vmtypes = new ArrayList<VMtype>();
-		vmtypes = VmTypesGen.vmTypeList(8);
+		vmtypes = VmTypesGen.vmTypeList(5);
 		Workflow workflow = new Workflow(false);
-		Workflowreaderlite.readliteworkflow(workflow, 80, 1200, 0, false);
+		Workflowreaderlite.readliteworkflow(workflow, 20, 80, 6, false);
 		
 		// profiling: collect mod-vmtype execution info
 		for (VMtype type: vmtypes) {
@@ -309,10 +309,11 @@ public class ScaleStar {
 				mod.profiling(type);
 			}
 		}
-
-		double ed = scalestar(workflow, vmtypes, 124);
-		workflow.printSched();
-		System.out.printf("ED=%.2f\n", ed);		
+		
+		double budget = 10;
+		double ed = scalestar(workflow, vmtypes, budget);
+		//workflow.printSched();
+		System.out.printf("ED=%.2f\tUtil=%.2f\n", ed, workflow.getCost()/budget);		
 	}
 
 }

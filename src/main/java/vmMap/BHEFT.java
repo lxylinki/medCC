@@ -31,8 +31,9 @@ public class BHEFT {
 	}
 	
 	public static double SAB(double budget, Workflow workflow) {
-		double mappedcost = 0;
+		double mappedcost = 0; // this is already consumed
 		double unmappedcost = 0; // this is an estimation
+		
 		for (Module mod: workflow.getModList()) {
 			
 			// skip entry/exit mods
@@ -48,17 +49,17 @@ public class BHEFT {
 				mappedcost += mod.getCost();
 			}
 		}	
-		double sab = budget - unmappedcost - mappedcost;
+		double sab = budget - mappedcost - unmappedcost;
 		return sab;
 	}
 
 	public static double AF( Module targetmod, Workflow workflow, double sab) {
+		/**
 		if (sab < 0) {
 			return 0;
-		}
+		}*/
 		
 		double unmappedcost = 0; // this is an estimation
-		
 		for (Module mod: workflow.getModList()) {
 			// skip entry/exit mods
 			if (mod.getPreMods().isEmpty() || mod.getSucMods().isEmpty()) {
@@ -69,6 +70,7 @@ public class BHEFT {
 				unmappedcost += mod.getCost();
 			} 
 		}
+		
 		double af = targetmod.getCost()/unmappedcost;
 		return af;
 	}
@@ -99,6 +101,7 @@ public class BHEFT {
 			mod.setCost(avgcost);
 		}
 		
+		// TODO: add strict budget check
 		for (Module mod: workflow.getModList()) {
 			// skip entry/exit mods
 			if (mod.getPreMods().isEmpty() || mod.getSucMods().isEmpty()) {
@@ -107,6 +110,9 @@ public class BHEFT {
 			
 			double sab = SAB(budget, workflow);
 			double ctb = CTB(mod, workflow, budget);
+			
+			//System.out.printf("SAB%d %.2f\n", mod.getModId(), sab);
+			
 			// affordable set
 			List<VMtype> sk = new ArrayList<VMtype>();
 			for (VMtype type: vmtypes) {
@@ -130,7 +136,6 @@ public class BHEFT {
 						afvprime = aftype;
 					}
 				}
-				
 				mod.setVmtype(afvprime);
 			}
 		}
@@ -146,9 +151,9 @@ public class BHEFT {
 	 */
 	public static void main(String[] args) {
 		List <VMtype> vmtypes = new ArrayList<VMtype>();
-		vmtypes = VmTypesGen.vmTypeList(8);
+		vmtypes = VmTypesGen.vmTypeList(5);
 		Workflow workflow = new Workflow(false);
-		Workflowreaderlite.readliteworkflow(workflow, 80, 1200, 0, false);
+		Workflowreaderlite.readliteworkflow(workflow, 20, 80, 6, false);
 		
 		// profiling: collect mod-vmtype execution info
 		for (VMtype type: vmtypes) {
@@ -157,8 +162,9 @@ public class BHEFT {
 			}
 		}
 
-		double ed = bheft(workflow, vmtypes, 124);
-		//workflow.printSched();
+		double ed = bheft(workflow, vmtypes, 9.52);
+		workflow.printSched();
+		workflow.printCost();
 		System.out.printf("ED=%.2f\n", ed);		
 
 	}
