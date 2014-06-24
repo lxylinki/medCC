@@ -8,7 +8,8 @@ import taskgraph.Workflow;
 import utilfunctions.CriticalPath;
 import utilfunctions.VmTypesGen;
 import virtualnet.VMtype;
-import vmMap.CriticalGreedy;
+import vmMap.BHEFT;
+import vmMap.CG;	
 import vmMap.ScaleStar;
 import filereaders.Workflowreaderlite;
 
@@ -94,9 +95,12 @@ public class CostConstrMed {
 			double budget = mincost + (i*budgetInc);
 			// add algs here
 			double ss = ScaleStar.scalestar(workflow, vmtypes, budget);
-			double cg = CriticalGreedy.criticalgreedy(workflow, vmtypes, budget);
-			double imp = (ss - cg)/ss;
-			System.out.printf("cost %.2f:\tCG %.2f\tSS %.2f\tImp %.2f\n", budget, cg, ss, imp);
+			double cg = CG.criticalgreedy(workflow, vmtypes, budget);
+			double bheft = BHEFT.bheft(workflow, vmtypes, budget);
+			//double imp = (ss - cg)/ss;
+			double otherimp = (ss - bheft)/ss;
+			//System.out.printf("cost %.2f:\tCG %.2f\tSS %.2f\tImp %.2f\n", budget, cg, ss, imp);
+			System.out.printf("cost %.2f:\tBHEFT %.2f\tSS %.2f\tImp %.2f\n", budget, bheft, ss, otherimp);
 		}
 		
 	}

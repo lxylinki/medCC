@@ -16,7 +16,7 @@ import virtualnet.VMtype;
  * @author Linki
  *
  */
-public class CriticalGreedy {
+public class CG {
 	
 	public static VMtype selectByTimedec(Module mod, double budgetleft, List<VMtype> vmtypes) {
 		VMtype newtype = null;
@@ -99,7 +99,7 @@ public class CriticalGreedy {
 			}
 			CriticalPath.topologicalSort(workflow);
 			double ed = CriticalPath.longestpathlen(workflow.getEntryMod(), workflow.getExitMod(), workflow, null);	
-			System.out.printf("ED=%.2f, budget left: %.2f\n", ed, budget-maxcost);
+			//System.out.printf("ED=%.2f, budget left: %.2f\n", ed, budget-maxcost);
 			workflow.printSched();
 			System.exit(0);
 		}
@@ -118,7 +118,7 @@ public class CriticalGreedy {
 		
 		//workflow.printStructInfo();
 		//workflow.printTimeInfo();
-		int CPchange = 0;
+		//int CPchange = 0;
 		while (budgetleft >= 0) {			
 			// number of new reschedules
 			double numOfResched = 0;
@@ -156,7 +156,6 @@ public class CriticalGreedy {
 				break;				
 			}
 			
-			
 			Module targetMod = workflow.getModule(targetModId);
 			VMtype targetVmtype = vmtypes.get(targetVmtypeId);
 			
@@ -171,11 +170,11 @@ public class CriticalGreedy {
 			
 			// update current CP
 			ed = CriticalPath.longestpathlen(workflow.getEntryMod(), workflow.getExitMod(), workflow, currentCP);
-			CPchange++;
+			//CPchange++;
 		}// end while
 		
 		//workflow.printSched();
-		System.out.printf("ED=%.2f, budget left: %.2f, CP changed %d times.\n", ed, budgetleft, CPchange);
+		//System.out.printf("ED=%.2f, budget left: %.2f, CP recomputed %d times.\n", ed, budgetleft, CPchange);
 		return ed;		
 	}
 
