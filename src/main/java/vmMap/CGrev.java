@@ -33,9 +33,9 @@ public class CGrev {
 	}
 	
 	// select reschedable mod with max buffertime from a sorted list
-	public static Module selectMod(List<Module> sortedModList, double targetcostdec, List<VMtype> vmtypes) {
+	public static Module selectMod( Workflow sortedworkflow, double targetcostdec, List<VMtype> vmtypes) {
 		Module targetMod = null;
-		for (Module mod: sortedModList) {
+		for (Module mod: sortedworkflow.getModList()) {
 			// skip entry/exit mod
 			if (mod.getPreMods().isEmpty() || mod.getSucMods().isEmpty()) {
 				continue;
@@ -103,13 +103,58 @@ public class CGrev {
 				}				
 			}
 		}
-		
 		return newtype;
+	}
+	
+	// a reverse procedure to extract cost by downgrading vmtype
+	public static double cgrev(Workflow workflow, double targetCostToDec, List<VMtype> vmtypes) {
+		double ed = workflow.getEd();
+		double costToDec = targetCostToDec;
+		
+		while (costToDec > 0) {
+			/**
+			double costToDecForThisRound = 0;
+			double decRatio = 1-costToDec/(maxcost-budget);
+			
+			if (decRatio == 0) {
+				costToDecForThisRound = costToDec/2;
+			} else {
+				costToDecForThisRound = costToDec*decRatio;
+			}*/
+
+			// update buffer time and sorting 
+			
+			updateBufferTime(workflow);
+			Collections.sort(workflow.getModList(), new bufferTimeComparator());
+			//workflow.printTimeInfo();
+			
+			/**
+			Module targetMod = selectMod(workflow, costToDecForThisRound, vmtypes);
+			VMtype newtype = selectByCostDec(targetMod, costToDecForThisRound, vmtypes);
+			*/
+			Module targetMod = selectMod(workflow, costToDec, vmtypes);
+			VMtype newtype = selectByCostDec(targetMod, costToDec, vmtypes);
+			
+			if (newtype == null) {
+				break;
+			}
+			
+			double costdec = targetMod.getCost() - targetMod.getCostOn(newtype);
+			costToDec -= costdec; 
+			//System.out.printf("Cost to dec: %.2f", costToDec);
+			
+			// resched
+			targetMod.setVmtype(newtype);
+			
+			//System.out.printf("mod%d - vmtype%d, costdec %.2f\n", targetMod.getModId(), newtype.getTypeid(), costdec);
+			ed = workflow.getEd();		
+			//System.out.printf("ED=%.2f\n", ed);
+		}				
+		return ed;
 	}
 	
 	public static double criticalgreedy(Workflow workflow, List<VMtype> vmtypes, double budget) {
 		// start from min-delay 
-		
 		// number of modules = N
 		int N = workflow.getOrder();
 		// skip entry/exit mod
@@ -165,43 +210,8 @@ public class CGrev {
 		double costToDec = workflow.getCost()-budget;
 		//System.out.printf("Cost to dec: %.2f\n", costToDec);
 		
-		
-		while (costToDec > 0) {
-			
-			double costToDecForThisRound = 0;
-			double decRatio = 1-costToDec/(maxcost-budget);
-			
-			if (decRatio == 0) {
-				costToDecForThisRound = costToDec/2;
-			} else {
-				costToDecForThisRound = costToDec*decRatio;
-			}
+		ed = cgrev(workflow, costToDec, vmtypes);
 
-			// update buffer time and sorting 
-			updateBufferTime(workflow);
-			Collections.sort(workflow.getModList(), new bufferTimeComparator());
-			//workflow.printTimeInfo();
-			
-	
-			Module targetMod = selectMod(workflow.getModList(), costToDecForThisRound, vmtypes);
-			
-			VMtype newtype = selectByCostDec(targetMod, costToDecForThisRound, vmtypes);
-			
-			if (newtype == null) {
-				break;
-			}
-			
-			double costdec = targetMod.getCost() - targetMod.getCostOn(newtype);
-			costToDec -= costdec; 
-			//System.out.printf("Cost to dec: %.2f", costToDec);
-			
-			// resched
-			targetMod.setVmtype(newtype);
-			//System.out.printf("mod%d - vmtype%d, costdec %.2f\n", targetMod.getModId(), newtype.getTypeid(), costdec);
-			ed = workflow.getEd();		
-			//System.out.printf("ED=%.2f\n", ed);
-		
-		}			
 		return ed;
 	}
 
@@ -215,7 +225,7 @@ public class CGrev {
 		vmtypes = VmTypesGen.vmTypeList(7);
 		
 		Workflow workflow = new Workflow(false);
-		Workflowreaderlite.readliteworkflow(workflow, 50, 500, 0, false);
+		Workflowreaderlite.readliteworkflow(workflow, 15, 60, 3, false);
 		
 		// profiling: collect mod-vmtype execution info
 		for (VMtype type: vmtypes) {
@@ -224,8 +234,8 @@ public class CGrev {
 			}
 		}	
 		
-		double ed = criticalgreedy(workflow, vmtypes, 21);
-		//workflow.printSched();
+		double ed = criticalgreedy(workflow, vmtypes, 4);
+		workflow.printSched();
 		System.out.printf("ED=%.2f\n", ed);
 
 	}

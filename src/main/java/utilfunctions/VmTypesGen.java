@@ -10,7 +10,7 @@ public class VmTypesGen {
 	// unit processing power in a VM
 	private static int basemips = 10;
 	
-	// charging rate of one unit
+	// charging rate of one proc unit
 	private static double baseprice = 0.01;
 	
 	// list of types increasing in procpower and price

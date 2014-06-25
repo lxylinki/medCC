@@ -38,8 +38,7 @@ public class CriticalPath {
 	}
 	
 	
-	
-	// return longestpath starts with srcMod and ends at dstMod, if no path return null
+	// return longestpath starts with srcMod and ends at dstMod, fill cp into result path
 	// TODO: need more tests
 	public static double longestpathlen(Module srcMod, Module dstMod, 
 			Workflow sortedworkflow, List<Module> resultpath) {
@@ -141,35 +140,42 @@ public class CriticalPath {
 			}	
 		}
 		
-		if (resultpath != null) {
-			double zero = 0.00000001;
+		
+		double zero = 0.00000001;		
+		for (Module mod: sortedworkflow.getModList()) {
+			if ( (mod.getForvisited() == 0) || (mod.getBackvisited() == 0)) {
+				mod.setCritical(true);
+				continue;
+			}				
+			double buf1 = mod.getLst()-mod.getEst();
+			double buf2 = mod.getLft()-mod.getEft();
 			
+			if ( (Math.abs(buf1) < zero) && (Math.abs(buf2) < zero)) {
+				//System.out.printf("CP mod%d\n", mod.getModId());
+				mod.setCritical(true);
+				//resultpath.add(mod);
+			} else {
+				mod.setCritical(false);
+			}
+			
+			/**
+			else {
+				System.out.printf("mod%d: buf1=%.2f, buf2=%.2f\n", mod.getModId(), buf1, buf2);
+				System.out.println((Math.abs(buf1) < Float.MIN_VALUE));
+				System.out.println((Math.abs(buf2) < Float.MIN_VALUE));
+			}*/
+		}
+		
+		// collect to resultpath
+		if (resultpath != null) {
 			// reinitialize
 			if (!(resultpath.isEmpty())) {
 				resultpath = new ArrayList<Module>();
 			}
-			
 			for (Module mod: sortedworkflow.getModList()) {
-				if ( (mod.getForvisited() == 0) || (mod.getBackvisited() == 0)) {
-					continue;
-				}				
-				double buf1 = mod.getLst()-mod.getEst();
-				double buf2 = mod.getLft()-mod.getEft();
-				
-				if ( (Math.abs(buf1) < zero) && (Math.abs(buf2) < zero)) {
-					//System.out.printf("CP mod%d\n", mod.getModId());
-					mod.setCritical(true);
+				if (mod.isCritical()) {
 					resultpath.add(mod);
-				} else {
-					mod.setCritical(false);
 				}
-				
-				/**
-				else {
-					System.out.printf("mod%d: buf1=%.2f, buf2=%.2f\n", mod.getModId(), buf1, buf2);
-					System.out.println((Math.abs(buf1) < Float.MIN_VALUE));
-					System.out.println((Math.abs(buf2) < Float.MIN_VALUE));
-				}*/
 			}	
 		}
 		return dstMod.getEft();

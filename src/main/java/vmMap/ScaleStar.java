@@ -28,7 +28,7 @@ public class ScaleStar {
 		}
 	}
 	
-	// select max CA1
+	// select vmtype1 from max ca1
 	// comparative advantage
 	public static double CA1(Module mod, VMtype vmtype1, VMtype vmtype2) {
 		double costdiffrate = (mod.getCostOn(vmtype2) - mod.getCostOn(vmtype1))/mod.getCostOn(vmtype1);
@@ -299,9 +299,9 @@ public class ScaleStar {
 		*/
 		
 		List <VMtype> vmtypes = new ArrayList<VMtype>();
-		vmtypes = VmTypesGen.vmTypeList(5);
+		vmtypes = VmTypesGen.vmTypeList(14);
 		Workflow workflow = new Workflow(false);
-		Workflowreaderlite.readliteworkflow(workflow, 20, 80, 6, false);
+		Workflowreaderlite.readliteworkflow(workflow, 50, 500, 3, false);
 		
 		// profiling: collect mod-vmtype execution info
 		for (VMtype type: vmtypes) {
@@ -310,9 +310,9 @@ public class ScaleStar {
 			}
 		}
 		
-		double budget = 10;
+		double budget = 20.62;
 		double ed = scalestar(workflow, vmtypes, budget);
-		//workflow.printSched();
+		workflow.printSched();
 		System.out.printf("ED=%.2f\tUtil=%.2f\n", ed, workflow.getCost()/budget);		
 	}
 

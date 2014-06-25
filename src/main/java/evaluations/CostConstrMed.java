@@ -7,8 +7,8 @@ import taskgraph.Module;
 import taskgraph.Workflow;
 import utilfunctions.VmTypesGen;
 import virtualnet.VMtype;
-import vmMap.CGrev;
-import vmMap.CGvar;
+import vmMap.CG2;
+import vmMap.ScaleStar;
 import filereaders.Workflowreaderlite;
 
 /**
@@ -84,24 +84,32 @@ public class CostConstrMed {
 			mod.setVmtype(vbasic);
 		}		
 		double maxdelay = workflow.getEd();
-		System.out.printf("Max delay %.2f\n", maxdelay);		
+		System.out.printf("Max delay %.2f\n", maxdelay);	
+		
+		for (int i=1; i<N-1; i++) {
+			Module mod = workflow.getModule(i);
+			mod.setVmtype(null);
+		}	
 		
 		double budgetInc = (maxcost-mincost)/budgetlevels;	
 		for (int i=1; i<=budgetlevels; i++) {
 			double budget = mincost + (i*budgetInc);
 			// add algs here
-			double cgvar = CGvar.criticalgreedy(workflow, vmtypes, budget);
-			double cgrev = CGrev.criticalgreedy(workflow, vmtypes, budget);
-			//double ss = ScaleStar.scalestar(workflow, vmtypes, budget);
+			//double cgvar = CGvar.criticalgreedy(workflow, vmtypes, budget);
+			//double cgrev = CGrev.criticalgreedy(workflow, vmtypes, budget);
+
+			double ss = ScaleStar.scalestar(workflow, vmtypes, budget);
 			//double bheft = BHEFT.bheft(workflow, vmtypes, budget);
+			double cg2 = CG2.cg2(workflow, vmtypes, budget);
 			
 			//double imp = (ss - cg)/ss;
-			double imp = (cgvar - cgrev)/cgvar;
+			//double imp = (cgvar - cgrev)/cgvar;
 			//double otherimp = (ss - bheft)/ss;
+			double imp = (ss-cg2)/ss;
 			
 			//System.out.printf("cost %.2f:\tCG %.2f\tSS %.2f\tImp %.2f\n", budget, cg, ss, imp);
-			System.out.printf("cost %.2f:\tVar %.2f\tRev %.2f\tImp %.2f\tUtil %.2f\n", budget, cgvar, cgrev, imp,
-					workflow.getCost()/budget);
+			System.out.printf("cost %.2f:\tSS %.2f\tCG2 %.2f\tImp %.2f\tUtil %.2f\tToDec %.2f\n", budget, ss, cg2, imp,
+					workflow.getCost()/budget, workflow.getCost()-budget);
 			
 			//System.out.printf("cost %.2f:\tBHEFT %.2f\tSS %.2f\tImp %.2f\tutil %.2f\n", budget, bheft, ss, otherimp, 
 			//		workflow.getCost()/budget);
@@ -115,9 +123,9 @@ public class CostConstrMed {
 	 */
 	public static void main(String[] args) {
 		List <VMtype> vmtypes = new ArrayList<VMtype>();
-		vmtypes = VmTypesGen.vmTypeList(14);
+		vmtypes = VmTypesGen.vmTypeList(20);
 		Workflow mytest = new Workflow(false);
-		Workflowreaderlite.readliteworkflow(mytest, 50, 500, 2, false);
+		Workflowreaderlite.readliteworkflow(mytest, 80, 1200, 4, false);
 		varBudgetLevel(mytest, vmtypes);
 	}
 

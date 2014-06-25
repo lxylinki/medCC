@@ -162,6 +162,55 @@ public class Module extends Cloudlet {
 	}
 	
 	
+	public VMtype getMaxCostType(List<VMtype> vmtypes) {
+		VMtype maxcosttype = null;
+		double localmax = Double.MIN_VALUE;
+		for (VMtype type: vmtypes) {
+			if (this.getCostOn(type) >= localmax) {
+				localmax = this.getCostOn(type);
+				maxcosttype = type;
+			}
+		}
+		return maxcosttype;
+	}
+	
+	public VMtype getMinCostType(List<VMtype> vmtypes) {
+		VMtype mincosttype = null;
+		double localmin = Double.MAX_VALUE;
+		for (VMtype type: vmtypes) {
+			if (this.getCostOn(type) <= localmin) {
+				localmin = this.getCostOn(type);
+				mincosttype = type;
+			}
+		}
+		return mincosttype;
+	}
+	
+	
+	public VMtype getMinDelayType(List<VMtype> vmtypes) {
+		VMtype mindelaytype = null;
+		double localmin = Double.MAX_VALUE;
+		for (VMtype type: vmtypes) {
+			if (this.getTimeOn(type) <= localmin) {
+				localmin = this.getTimeOn(type);
+				mindelaytype = type;
+			}
+		}
+		return mindelaytype;
+	}
+	
+	public VMtype getMaxDelayType(List<VMtype> vmtypes) {
+		VMtype maxdelaytype = null;
+		double localmax = Double.MIN_VALUE;
+		for (VMtype type: vmtypes) {
+			if (this.getTimeOn(type) >= localmax) {
+				localmax = this.getTimeOn(type);
+				maxdelaytype = type;
+			}
+		}
+		return maxdelaytype;		
+	}
+	
 	public void addSucMod(Module mod) {
 		this.sucMods.add(mod);
 	}

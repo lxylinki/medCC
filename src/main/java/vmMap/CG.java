@@ -106,37 +106,35 @@ public class CG {
 		double currentCost = mincost;
 		double budgetleft = budget - currentCost;
 		
-		List<Module> currentCP = new ArrayList<Module>();		
-		CriticalPath.topologicalSort(workflow);		
-		double ed = CriticalPath.longestpathlen(workflow.getEntryMod(), workflow.getExitMod(), workflow, currentCP);
+		
+		double ed = workflow.getEd();
 		
 		//System.out.printf("init ED: %.2f, init cost %.2f\n", ed, currentCost);
-		
-		for (Module mod: workflow.getModList()) {
-			mod.setRescheduled(0);
-		}
-		
+
 		//workflow.printStructInfo();
 		//workflow.printTimeInfo();
 		//int CPchange = 0;
-		while (budgetleft >= 0) {			
+		
+		List<Module> currentCP = new ArrayList<Module>();	
+		
+		while (budgetleft > 0) {
+			// update current CP
+			ed = CriticalPath.longestpathlen(workflow.getEntryMod(), workflow.getExitMod(), workflow, currentCP);
+			//CPchange++;		
+			
 			// number of new reschedules
 			double numOfResched = 0;
 			double maxtimedecOnCP = 0;
 			
 			// resched one mod per new CP
 			int targetModId = -1;
-			int targetVmtypeId = -1;
+			int targetVmtypeId = -1;			
 
 			// modules on CP
 			for(Module mod: currentCP) {
 
 				// skip entry/exit mod
 				if (mod.getPreMods().isEmpty() || mod.getSucMods().isEmpty()) {
-					continue;
-				}
-				
-				if (mod.getRescheduled()>0) {
 					continue;
 				}
 				
@@ -172,9 +170,6 @@ public class CG {
 			targetMod.setVmtype(targetVmtype);	
 			//System.out.printf("Reschedule mod%d to vmtype%d\n", targetMod.getModId(), targetVmtype.getTypeid());
 			
-			// update current CP
-			ed = CriticalPath.longestpathlen(workflow.getEntryMod(), workflow.getExitMod(), workflow, currentCP);
-			//CPchange++;
 		}// end while
 		
 		//workflow.printSched();

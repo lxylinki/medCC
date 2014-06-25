@@ -112,7 +112,12 @@ public class CGvar {
 		//workflow.printTimeInfo();
 		
 		//int CPchange = 0;
-		while (budgetleft >= 0) {	
+		for (Module mod: workflow.getModList()) {
+			mod.setRescheduled(0);
+		}
+		
+		while (budgetleft > 0) {
+			
 			// update current CP
 			ed = CriticalPath.longestpathlen(workflow.getEntryMod(), workflow.getExitMod(), workflow, currentCP);
 			
@@ -127,7 +132,7 @@ public class CGvar {
 				budgetForThisRound = budgetleft*spendRatio;
 			}
 			 
-			//System.out.printf("budgetleft: %.2f, budgetforthisround: %.2f\n", budgetleft, budgetForThisRound);
+			System.out.printf("budgetleft: %.2f, budgetforthisround: %.2f\n", budgetleft, budgetForThisRound);
 			
 			// number of new reschedules
 			double numOfResched = 0;
@@ -142,6 +147,10 @@ public class CGvar {
 
 				// skip entry/exit mod
 				if (mod.getPreMods().isEmpty() || mod.getSucMods().isEmpty()) {
+					continue;
+				}
+				
+				if (mod.getRescheduled() > 0) {
 					continue;
 				}
 
@@ -174,9 +183,9 @@ public class CGvar {
 			
 			// resched
 			targetMod.setVmtype(targetVmtype);	
+			targetMod.setRescheduled(targetMod.getRescheduled()+1);
 			//System.out.printf("Reschedule mod%d to vmtype%d\n", targetMod.getModId(), targetVmtype.getTypeid());
 
-			//CPchange++;
 		}// end while
 		
 		//workflow.printSched();
@@ -191,10 +200,10 @@ public class CGvar {
 		// numerical example
 		
 		List <VMtype> vmtypes = new ArrayList<VMtype>();
-		vmtypes = VmTypesGen.vmTypeList(7);
+		vmtypes = VmTypesGen.vmTypeList(14);
 		
 		Workflow workflow = new Workflow(false);
-		Workflowreaderlite.readliteworkflow(workflow, 15, 60, 3, false);
+		Workflowreaderlite.readliteworkflow(workflow, 50, 500, 3, false);
 		
 		// profiling: collect mod-vmtype execution info
 		for (VMtype type: vmtypes) {
@@ -202,7 +211,7 @@ public class CGvar {
 				mod.profiling(type);
 			}
 		}		
-		double ed = criticalgreedy(workflow, vmtypes, 8.73);
+		double ed = criticalgreedy(workflow, vmtypes, 20.62);
 		workflow.printSched();
 		System.out.printf("ED=%.2f\n", ed);
 	}
