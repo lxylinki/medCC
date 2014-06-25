@@ -98,8 +98,7 @@ public class CGvar {
 			return workflow.getEd();
 		}
 		
-		//System.out.printf("budget %.2f, min cost %.2f, max cost %.2f.\n", budget, mincost, maxcost);
-				
+		// System.out.printf("budget %.2f, min cost %.2f, max cost %.2f.\n", budget, mincost, maxcost);
 		// keep track of current cost
 		double ed = workflow.getEd();
 		double currentCost = mincost;
@@ -116,8 +115,8 @@ public class CGvar {
 			mod.setRescheduled(0);
 		}
 		
+		
 		while (budgetleft > 0) {
-			
 			// update current CP
 			ed = CriticalPath.longestpathlen(workflow.getEntryMod(), workflow.getExitMod(), workflow, currentCP);
 			
@@ -168,6 +167,7 @@ public class CGvar {
 					}
 				} 
 			}
+			
 			// no more resched found this round
 			if (numOfResched == 0) {
 				break;				

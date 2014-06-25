@@ -92,6 +92,7 @@ public class CG2 {
 
 	
 	public static double cg2(Workflow workflow, List<VMtype> vmtypes, double budget) {
+		// profile all exec info
 		profile(workflow, vmtypes);
 		
 		// check budget input
@@ -114,8 +115,7 @@ public class CG2 {
 				mod.setVmtype(vprime);
 			}
 			return workflow.getEd();
-		}
-		
+		}		
 		
 		double budgetlevel = budget/(maxcost - mincost);
 		// set initial sched according to budgetlevel
@@ -140,7 +140,10 @@ public class CG2 {
 		// now there is some cost left
 		double currentCost = workflow.getCost();
 		if (currentCost > budget) {
+			// spend it by cg
 			double costToSpend = budget - currentCost;
+			List<Module> currentCP = new ArrayList<Module>();	
+			ed = CG.cg(workflow, vmtypes, costToSpend, currentCP);			
 		}
 
 		//workflow.printSched();

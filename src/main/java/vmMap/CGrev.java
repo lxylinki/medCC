@@ -211,7 +211,6 @@ public class CGrev {
 		//System.out.printf("Cost to dec: %.2f\n", costToDec);
 		
 		ed = cgrev(workflow, costToDec, vmtypes);
-
 		return ed;
 	}
 
