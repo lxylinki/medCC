@@ -89,7 +89,6 @@ public class CG2 {
 		}
 		return vtselected;
 	}
-
 	
 	public static double cg2(Workflow workflow, List<VMtype> vmtypes, double budget) {
 		// profile all exec info

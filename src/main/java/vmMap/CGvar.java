@@ -184,6 +184,7 @@ public class CGvar {
 			// resched
 			targetMod.setVmtype(targetVmtype);	
 			targetMod.setRescheduled(targetMod.getRescheduled()+1);
+			
 			//System.out.printf("Reschedule mod%d to vmtype%d\n", targetMod.getModId(), targetVmtype.getTypeid());
 
 		}// end while

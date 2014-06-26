@@ -12,7 +12,11 @@ import utilfunctions.CriticalPath;
 import utilfunctions.VmTypesGen;
 import virtualnet.VMtype;
 import vmMap.ScaleStar.blevelComparator;
-
+/**
+ * The original algorithm often exceed budget a little!
+ * @author Linki
+ *
+ */
 public class BHEFT {
 
 	// set blevel value for mod
@@ -101,6 +105,7 @@ public class BHEFT {
 			mod.setCost(avgcost);
 		}
 		
+		
 		// TODO: add strict budget check
 		for (Module mod: workflow.getModList()) {
 			// skip entry/exit mods
@@ -110,7 +115,6 @@ public class BHEFT {
 			
 			double sab = SAB(budget, workflow);
 			double ctb = CTB(mod, workflow, budget);
-			
 			//System.out.printf("SAB%d %.2f\n", mod.getModId(), sab);
 			
 			// affordable set
@@ -120,6 +124,7 @@ public class BHEFT {
 					sk.add(type);
 				}
 			}
+			
 			
 			if (sk.isEmpty()) {
 				if (sab >= 0) {
@@ -140,9 +145,7 @@ public class BHEFT {
 			}
 		}
 		
-		CriticalPath.topologicalSort(workflow);		
-		double ed = CriticalPath.longestpathlen(workflow.getEntryMod(), workflow.getExitMod(), workflow, null);
-		
+		double ed = workflow.getEd();		
 		return ed;
 	}
 
