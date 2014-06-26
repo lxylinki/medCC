@@ -18,6 +18,7 @@ public class CG2 {
 		for (VMtype type: vmtypes) {
 			for (Module mod: workflow.getModList()) {
 				mod.profiling(type);
+				mod.setVmtype(null);
 			}
 		}		
 	}

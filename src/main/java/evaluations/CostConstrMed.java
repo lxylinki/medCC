@@ -9,6 +9,7 @@ import utilfunctions.VmTypesGen;
 import virtualnet.VMtype;
 import vmMap.BHEFT;
 import vmMap.CG2;
+import vmMap.HBCS;
 import filereaders.Workflowreaderlite;
 
 /**
@@ -98,19 +99,20 @@ public class CostConstrMed {
 			//double cgrev = CGrev.criticalgreedy(workflow, vmtypes, budget);
 
 			//double ss = ScaleStar.scalestar(workflow, vmtypes, budget);
-			double bheft = BHEFT.bheft(workflow, vmtypes, budget);
+			//double bheft = BHEFT.bheft(workflow, vmtypes, budget);
 			double cg2 = CG2.cg2(workflow, vmtypes, budget);
+			double hbcs = HBCS.hbcs(workflow, vmtypes, budget);
 			
-			//double imp = (ss - cg)/ss;
+			double imp = (hbcs - cg2)/hbcs;
 			//double imp = (cgvar - cgrev)/cgvar;
 			//double otherimp = (ss - bheft)/ss;
-			double imp = (bheft-cg2)/bheft;
+			//double imp = (bheft-cg2)/bheft;
 			
 			//System.out.printf("cost %.2f:\tCG %.2f\tSS %.2f\tImp %.2f\n", budget, cg, ss, imp);
 			//System.out.printf("cost %.2f:\tSS %.2f\tCG2 %.2f\tImp %.2f\tUtil %.2f\tToDec %.2f\n", budget, ss, cg2, imp,
 			//		workflow.getCost()/budget, workflow.getCost()-budget);
 			
-			System.out.printf("cost %.2f:\tBHEFT %.2f\tCG2 %.2f\tImp %.2f\tUtil %.2f\n", budget, bheft, cg2, imp,
+			System.out.printf("cost %.2f:\tHBCS %.2f\tCG2 %.2f\tImp %.2f\tUtil %.2f\n", budget, hbcs, cg2, imp,
 					workflow.getCost()/budget);
 			
 			//System.out.printf("cost %.2f:\tBHEFT %.2f\tSS %.2f\tImp %.2f\tutil %.2f\n", budget, bheft, ss, otherimp, 
@@ -124,9 +126,9 @@ public class CostConstrMed {
 	 */
 	public static void main(String[] args) {
 		List <VMtype> vmtypes = new ArrayList<VMtype>();
-		vmtypes = VmTypesGen.vmTypeList(8);
+		vmtypes = VmTypesGen.vmTypeList(9);
 		Workflow mytest = new Workflow(false);
-		Workflowreaderlite.readliteworkflow(mytest, 20, 80, 2, false);
+		Workflowreaderlite.readliteworkflow(mytest, 20, 80, 12, false);
 		varBudgetLevel(mytest, vmtypes);
 	}
 
