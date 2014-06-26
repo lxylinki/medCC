@@ -139,6 +139,7 @@ public class ScaleStar {
 					currentCost += mod.getCost();
 					continue;
 				}
+				
 				//System.out.printf("checking mod %d ...\n", i);
 				double CA1a = CA1(mod, vmj, mod.getVmtype());
 				double CA1b = CA1(mod, mod.getVmtype(), vmj);

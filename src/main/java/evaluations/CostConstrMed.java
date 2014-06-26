@@ -87,9 +87,9 @@ public class CostConstrMed {
 	 */
 	public static void main(String[] args) {
 		List <VMtype> vmtypes = new ArrayList<VMtype>();
-		vmtypes = VmTypesGen.vmTypeList(9);
+		vmtypes = VmTypesGen.vmTypeList(8);
 		Workflow mytest = new Workflow(false);
-		Workflowreaderlite.readliteworkflow(mytest, 20, 80, 10, false);
+		Workflowreaderlite.readliteworkflow(mytest, 20, 80, 8, false);
 		varBudgetLevel(mytest, vmtypes);
 	}
 

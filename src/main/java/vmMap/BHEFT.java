@@ -125,7 +125,6 @@ public class BHEFT {
 				}
 			}
 			
-			
 			if (sk.isEmpty()) {
 				if (sab >= 0) {
 					mod.setVmtype(vprime);
