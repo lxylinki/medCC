@@ -13,7 +13,7 @@ import utilfunctions.VmTypesGen;
 import virtualnet.VMtype;
 import vmMap.ScaleStar.blevelComparator;
 /**
- * The original algorithm often exceed budget a little!
+ * BHEFT alg often consume more than given budget.
  * @author Linki
  *
  */
@@ -132,7 +132,7 @@ public class BHEFT {
 				} else {
 					mod.setVmtype(vmin);
 				}
-			} else { // select affordable best
+			} else { // select affordable best: not REALLY affordable
 				double mintime = Double.MAX_VALUE;
 				VMtype afvprime = null;
 				for (VMtype aftype: sk) {

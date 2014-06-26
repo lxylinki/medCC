@@ -427,6 +427,7 @@ public class Module extends Cloudlet {
 			this.setVmtypeid(-1);
 			this.setTime(0);
 			this.setCost(0);
+			this.initTime();
 		}
 
 	}

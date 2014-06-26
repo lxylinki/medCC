@@ -83,7 +83,7 @@ public class CG2 {
 		double diff = Double.MAX_VALUE;
 		
 		for (VMtype type: vmtypes) {
-			if ( Math.abs(mod.getCostOn(type) - targetcost) <= diff ) {
+			if ( Math.abs(mod.getCostOn(type) - targetcost) < diff ) {
 				diff = Math.abs(mod.getCostOn(type) - targetcost);
 				vtselected = type;
 			}

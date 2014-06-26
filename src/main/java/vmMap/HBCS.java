@@ -13,6 +13,11 @@ import utilfunctions.VmTypesGen;
 import virtualnet.VMtype;
 import vmMap.ScaleStar.blevelComparator;
 
+/**
+ * HBCS alg often consume more than given budget.
+ * @author linki
+ *
+ */
 public class HBCS {
 
 	public static void calcublevel(Module mod, Workflow sortedworkflow) {
@@ -95,11 +100,14 @@ public class HBCS {
 		}
 		Collections.sort( workflow.getModList(), new blevelComparator());
 		
+		double currentCost = 0;
 		double RB = budget;
 		double RCB = CG2.getMinCost(workflow, vmtypes);
 		
 		while(unschededMod(workflow)) {
+	
 			for (Module mod: workflow.getModList()) {
+				
 				if (mod.getVmtypeid()==-1) {
 					VMtype mincosttype = mod.getMinCostType(vmtypes);
 					double localmincost = mod.getCostOn(mincosttype);
@@ -108,27 +116,43 @@ public class HBCS {
 					double costcoeff = RCB/RB;
 					double maxworthiness = Double.MIN_VALUE;
 					VMtype selectedtype = null;
+					
 					// select type with max worthiness
 					for (VMtype type: vmtypes) {
 						VMtype best = mod.getMinDelayType(vmtypes);
-						if (mod.getCostOn(type)>mod.getCostOn(best)) {
+						double thiscost = mod.getCostOn(type);
+						
+						if (thiscost > mod.getCostOn(best)) {
 							continue;
 						}
 						
-						if ( mod.getCostOn(type)> (RB - RCB)) {
+						if (thiscost > (RB - RCB)) {
+							continue;
+						}
+						
+						// added budget check
+						if ( thiscost > (budget - currentCost) ) {
 							continue;
 						}
 						
 						double worthiness = CostRate(mod, type, vmtypes)*costcoeff + TimeRate(mod, type, vmtypes);
-						if (worthiness > maxworthiness) {
+
+						if (worthiness >= maxworthiness) {
 							maxworthiness = worthiness;
 							selectedtype = type;
 						}
-					}// end for
+					}// end types check for loop
+					
+					// use min cost type if not found
+					if (selectedtype == null) {
+						selectedtype = mod.getMinCostType(vmtypes);
+					}
+					
 					mod.setVmtype(selectedtype);
 					RB -= mod.getCost();
+					currentCost += mod.getCost();
 				}
-			}
+			}// end mod check for loop
 		}// end while
 		
 		double ed = workflow.getEd();

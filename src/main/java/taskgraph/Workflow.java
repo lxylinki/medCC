@@ -125,6 +125,13 @@ public class Workflow {
 	public double getCost() {
 		double cost = 0;
 		for (Module mod: this.getModList()) {
+			if (mod.getPreMods().isEmpty() || mod.getSucMods().isEmpty()) {
+				continue;
+			}
+			
+			if (mod.getVmtypeid()==-1) {
+				continue;
+			}
 			cost += mod.getCost();
 		}
 		return cost;
