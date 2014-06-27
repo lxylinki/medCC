@@ -1,0 +1,2 @@
+CG        HBCS        ScaleStar
+ 110        95        0
