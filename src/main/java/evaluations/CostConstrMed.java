@@ -118,6 +118,7 @@ public class CostConstrMed {
 		
 		Workflow workflow = new Workflow(false);
 		List<VMtype> vmtypes = new ArrayList<VMtype>();
+		
 		List<Double> algresults = new ArrayList<Double>();
 		algresults.add(0.0);
 		algresults.add(0.0);
@@ -125,7 +126,9 @@ public class CostConstrMed {
 		
 		//List <VMtype> vmtypes = new ArrayList<VMtype>();
 		
+		// 10 file index
 		for (int fileid=0; fileid<10; fileid++) {
+			// 20 problem index
 			for (int i=0; i<20; i++) {
 				int mods = numOfMods[i];
 				int edges = numOfEdges[i];

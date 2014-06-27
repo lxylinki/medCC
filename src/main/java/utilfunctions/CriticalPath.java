@@ -144,7 +144,7 @@ public class CriticalPath {
 		double zero = 0.00000001;		
 		for (Module mod: sortedworkflow.getModList()) {
 			if ( (mod.getForvisited() == 0) || (mod.getBackvisited() == 0)) {
-				mod.setCritical(true);
+				mod.setCritical(false);
 				continue;
 			}				
 			double buf1 = mod.getLst()-mod.getEst();

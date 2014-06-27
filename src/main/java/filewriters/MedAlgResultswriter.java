@@ -12,8 +12,6 @@ import org.cloudbus.cloudsim.Log;
 
 public class MedAlgResultswriter {
 	
-	
-	
 	// generate filename for results
 	public static String resfilename(int order, int size, int id, boolean opt) {
 		String dirprefix = "src/main/resources/output/evalresults2014/";
