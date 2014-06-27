@@ -18,7 +18,7 @@ public class BruteForceTree {
 	private List<node> nodes = null;
 	
 	// a node in the tree
-	static class node {
+	public static class node {
 		// type id
 		int nodeId = -1;
 		
@@ -50,6 +50,10 @@ public class BruteForceTree {
 				this.pathIds = new ArrayList<Integer>(parent.pathIds);
 				this.pathIds.add(this.nodeId);
 			}
+		}
+		
+		public List<Integer> getPath() {
+			return pathIds;
 		}
 		
 		public void printpath() {
@@ -128,8 +132,19 @@ public class BruteForceTree {
 		return basetree;
 	}
 	
+	
+	public List<node> getLeafs() {
+		List<node> leafs = new ArrayList<node>();
+		for (node nod: this.getNodes()) {
+			if(isleaf(nod, this)) {
+				leafs.add(nod);
+			}
+		}
+		return leafs;
+	}
+	
 	public static void main(String[] args) {		
-		BruteForceTree mytest = bruteforcetree(5,3);
+		BruteForceTree mytest = bruteforcetree(4,3);
 		printLeafPaths(mytest);
 
 	}
