@@ -36,8 +36,9 @@ public class Workflowreaderlite {
 		
 		if (tiny) {
 			filename = dirprefix + "tinyworkflow_" + order + "_" + size + "_" + id + fileformat;
+		} else {
+			filename = dirprefix + "workflow_" + order + "_" + size + "_" + id + fileformat;	
 		}
-		filename = dirprefix + "workflow_" + order + "_" + size + "_" + id + fileformat;	
 		
 		//System.out.println(filename);
 		try {

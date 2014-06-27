@@ -66,11 +66,11 @@ public class BruteForce {
 		// search
 		for (node leaf: allMappings.getLeafs()) {
 			double cost = calcuCost(workflow, leaf, vmtypes);
-			System.out.printf("cost = %.2f\n", cost);
-			leaf.printpath();
+			//System.out.printf("cost = %.2f\n", cost);
+			//leaf.printpath();
 			
-			if (cost >= budget) {
-				System.out.println("exceed budget");
+			if (cost > budget) {
+				//System.out.println("exceed budget");
 				continue;
 			}
 			
@@ -87,7 +87,7 @@ public class BruteForce {
 			System.exit(1);
 		}
 		
-		optmap.printpath();
+		//optmap.printpath();
 		med = calcuEd(workflow, optmap, vmtypes);
 		return med;
 	}

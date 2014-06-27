@@ -7,8 +7,10 @@ import taskgraph.Module;
 import taskgraph.Workflow;
 import utilfunctions.VmTypesGen;
 import virtualnet.VMtype;
+import vmMap.BruteForce;
 import vmMap.CG2;
 import vmMap.HBCS;
+import vmMap.ScaleStar;
 import filereaders.Workflowreaderlite;
 
 /**
@@ -71,13 +73,17 @@ public class CostConstrMed {
 			// add algs here			
 			double cg2 = CG2.cg2(workflow, vmtypes, budget);
 			double hbcs = HBCS.hbcs(workflow, vmtypes, budget);
+			double ss = ScaleStar.scalestar(workflow, vmtypes, budget);
+			double opt = BruteForce.bruteforce(workflow, vmtypes, budget);
 			//System.out.printf("cost %.2f:\tHBCS %.2f\tUtil %.2f\n", budget, hbcs, workflow.getCost()/budget);
 			
-			double imp = (hbcs - cg2)/hbcs;
+			//double imp = (hbcs - cg2)/hbcs;
 	
-			
+			/**
 			System.out.printf("cost %.2f:\tHBCS %.2f\tCG2 %.2f\tImp %.2f\tUtil %.2f\n", budget, hbcs, cg2, imp,
-					workflow.getCost()/budget);
+					workflow.getCost()/budget);*/
+			
+			System.out.printf("cost %.2f: SS %.2f\tHBCS %.2f\tCG2 %.2f\tOPT %.2f\n", budget, ss, hbcs, cg2, opt);
 					
 		}
 	}
@@ -87,9 +93,9 @@ public class CostConstrMed {
 	 */
 	public static void main(String[] args) {
 		List <VMtype> vmtypes = new ArrayList<VMtype>();
-		vmtypes = VmTypesGen.vmTypeList(8);
+		vmtypes = VmTypesGen.vmTypeList(5);
 		Workflow mytest = new Workflow(false);
-		Workflowreaderlite.readliteworkflow(mytest, 20, 80, 8, false);
+		Workflowreaderlite.readliteworkflow(mytest, 5, 6, 8, true);
 		varBudgetLevel(mytest, vmtypes);
 	}
 
