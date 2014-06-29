@@ -12,8 +12,9 @@ def calcuAvg(mods, edges, maxbudlevel):
     avgfilename = os.path.join(outfiledir, avgfilename)
     avgfile = open(avgfilename, 'w')
     avgfile.write('Bd        CG/HBCS        CG/ScaleStar\n')
-
-    for i in range (0, maxbudlevel):
+    
+    # 1-20
+    for i in range (1, maxbudlevel+1):
         avgimpoverhbcs = 0
         avgimpoverss = 0
 

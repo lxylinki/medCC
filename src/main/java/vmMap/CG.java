@@ -20,7 +20,8 @@ public class CG {
 	
 	public static VMtype selectByTimedec(Module mod, double budgetleft, List<VMtype> vmtypes) {
 		VMtype newtype = null;
-		double timedecmax = Double.MIN_VALUE;
+		//double timedecmax = Double.MIN_VALUE;
+		double ratiomax = Double.MIN_VALUE;
 		
 		for (VMtype type: vmtypes) {
 			// skip if no time dec
@@ -34,11 +35,19 @@ public class CG {
 			}
 			// select max time dec
 			double timedec = mod.getTime() - mod.getTimeOn(type);
+			
+			/**
 			if (timedec > timedecmax) {
 				//System.out.printf("time dec: %.2f\n", timedec);
 				timedecmax = timedec;
 				newtype = type;
-			}						
+			}	
+			*/
+			
+			if ( (timedec/costinc) >= ratiomax ) {
+				ratiomax = (timedec/costinc);
+				newtype = type;
+			}
 		}
 		// if null remain current sched
 		return newtype;

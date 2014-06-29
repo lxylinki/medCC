@@ -6,7 +6,7 @@ def calcuImp(mods, edges, index):
     # med results
     filedir = './{}_{}/'.format(mods, edges)
 
-    filename = 'workflow_{}_{}_{}.txt'.format(mods, edges, i)
+    filename = 'workflow_{}_{}_{}.txt'.format(mods, edges, index)
     filename = os.path.join(filedir,filename)
     results = open(filename, 'r')
     

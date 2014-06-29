@@ -27,6 +27,7 @@ public class HBCS {
 	
 	public static boolean unschededMod(Workflow workflow) {
 		boolean result = false;
+		
 		for (Module mod: workflow.getModList()) {
 			if (mod.getPreMods().isEmpty() || mod.getSucMods().isEmpty()) {
 				continue;
@@ -173,7 +174,8 @@ public class HBCS {
 			for (Module mod: workflow.getModList()) {
 				mod.profiling(type);
 			}
-		}		
+		}
+		
 		double budget = 5;
 		double ed = hbcs(workflow, vmtypes, budget);
 		workflow.printSched();

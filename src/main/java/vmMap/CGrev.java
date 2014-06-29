@@ -17,7 +17,8 @@ public class CGrev {
 	static class bufferTimeComparator implements Comparator<Module> {
 		public int compare(Module mod1, Module mod2) {
 			int bufferdiff;
-			bufferdiff = (int) Math.abs(mod2.getBuffertime()-mod1.getBuffertime());
+			// 
+			bufferdiff = (int) (mod2.getBuffertime()-mod1.getBuffertime());
 			return bufferdiff;
 		}		
 	}
@@ -53,7 +54,8 @@ public class CGrev {
 
 
 	public static VMtype selectByCostDec(Module mod, double targetcostdec, List<VMtype> vmtypes) {
-		double maxdec = Double.MIN_VALUE;
+		
+		double maxdecratio = Double.MIN_VALUE;
 		VMtype newtype = null;
 		
 		// strict check
@@ -61,22 +63,24 @@ public class CGrev {
 			double costdec = mod.getCost() - mod.getCostOn(type);
 			double timeinc = mod.getTimeOn(type) - mod.getTime();
 			
+			double costdecratio = costdec/timeinc;
+			
 			// skip if no cost dec
 			if (costdec <= 0) {
 				continue;
 			}
 			
-			if (costdec >= maxdec) {
+			if (costdecratio > maxdecratio) {
 				// skip if time inc too much
 				if (timeinc > mod.getBuffertime()) {
 					continue;
 				}
-				maxdec = costdec;
+				maxdecratio = costdecratio;
 				newtype = type;
 			}
 			
 			// if cost dec can meet target
-			if (costdec > targetcostdec) {
+			if (costdec >= targetcostdec) {
 				break;
 			}
 		}
@@ -86,19 +90,21 @@ public class CGrev {
 			// a more relaxed check consider only cost
 			for (VMtype type: vmtypes) {
 				double costdec = mod.getCost() - mod.getCostOn(type);
+				double timeinc = mod.getTimeOn(type) - mod.getTime();
+				double costdecratio = costdec/timeinc;
 				
 				// skip if no cost dec
 				if (costdec <= 0) {
 					continue;
 				}
 				
-				if (costdec >= maxdec) {
-					maxdec = costdec;
+				if (costdecratio > maxdecratio) {
+					maxdecratio = costdecratio;
 					newtype = type;
 				}
 				
 				// if cost dec can meet target
-				if (costdec > targetcostdec) {
+				if (costdec >= targetcostdec) {
 					break;
 				}				
 			}
