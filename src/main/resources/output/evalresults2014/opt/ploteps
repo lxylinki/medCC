@@ -9,5 +9,5 @@ set auto x
 set auto y
 set style histogram cluster gap 2
 set style fill solid noborder
-plot 'optstats.dat' u 1:xtic(4) ti col lc rgb '#0099FF', '' u 2 ti col lc rgb '#3C3C3C', '' u 3 ti col lc rgb '#171717'
+plot 'optstats.dat' u 1:xtic(4) ti col lc rgb '#00CC66', '' u 2 ti col lc rgb '#3C3C3C', '' u 3 ti col lc rgb '#B80000'
 

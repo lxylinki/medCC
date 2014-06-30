@@ -1,0 +1,16 @@
+set linetype 1 lc rgb '#FF6600' lt 1 lw 2   # --- orange
+set linetype 2 lc rgb '#0099FF' lt 1 lw 2   # --- cyan
+set terminal postscript eps enhanced color font ',12'
+set output 'indexasx.eps'
+set style data histogram
+set xtics nomirror rotate by -45 scale 0 font ',12'
+set xlabel 'Problem Index'
+set ylabel 'Average MED Improvement Percentage'
+set grid y
+set xrange [-1:20]
+set yrange [-25:35]
+set boxwidth 0.9
+set style histogram cluster gap 2
+set style histogram errorbars gap 2 lw 2
+set style fill solid
+plot 'indexasx.dat' u 2:3:xtic(1) ti col(2) lt 1, ''u 4:5 ti col(4) lt 2
