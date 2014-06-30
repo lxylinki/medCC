@@ -1,7 +1,7 @@
-set terminal postscript eps enhanced color font ',12'
+set terminal postscript eps enhanced color font ',16'
 set output 'optstats.eps'
 set style data histogram
-set xtics nomirror rotate by -45 scale 0 font ',12'
+set xtics nomirror rotate by -45 scale 0 font ',16'
 set xlabel 'Problem Index'
 set ylabel 'Number of Optimal Results'
 set grid y
