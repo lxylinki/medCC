@@ -155,7 +155,7 @@ public class CG2 {
 		// now there may be some cost left
 		double currentCost = workflow.getCost();
 		
-		if (currentCost > budget) {
+		if (currentCost < budget) {
 			// spend it by cg
 			double costToSpend = budget - currentCost;
 			List<Module> currentCP = new ArrayList<Module>();
