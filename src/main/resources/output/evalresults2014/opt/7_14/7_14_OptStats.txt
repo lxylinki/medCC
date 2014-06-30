@@ -1,2 +1,2 @@
 CG        HBCS        ScaleStar
- 275        96        0
+ 626        96        0
