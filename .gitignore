@@ -5,6 +5,10 @@
 .project
 *cpd-report.txt
 
+# py stuff #
+############
+.pydevproject
+
 # MVN target #
 ##############
 target/
