@@ -12,6 +12,6 @@ set ylabel 'Problem Index'
 set title 'Imp(HBCS)'
 set auto x
 set auto y
-set auto z
+set zrange [-5:60]
 set grid
 splot 'impoverhbcs.dat' w points ls 1

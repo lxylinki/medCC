@@ -11,7 +11,7 @@ set ylabel 'Problem Index'
 set title 'Imp(ScaleStar)'
 set auto x
 set auto y
-set auto z
+set zrange [-5:60]
 set grid
 unset key
 splot 'impoverss.dat' w points ls 1
