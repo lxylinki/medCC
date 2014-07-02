@@ -51,7 +51,7 @@ public class BruteForce {
 	}
 
 	public static double bruteforce(Workflow workflow, List<VMtype> vmtypes, double budget) {
-		// profile first
+		// profile first: turn off if real profile available
 		CG2.profile(workflow, vmtypes);
 		
 		// construct brute force tree

@@ -88,7 +88,7 @@ public class Module extends Cloudlet {
 		
 		// exec by procpower 1
 		setTime(getWorkload());
-		setMappings(new HashMap<VMtype, execInfo>());
+		setProfiles(new HashMap<VMtype, execInfo>());
 	}
 	
 	// execution time 
@@ -105,12 +105,12 @@ public class Module extends Cloudlet {
 	}
 	
 	// the execution information on a vm type
-	private static class execInfo  {
+	public static class execInfo  {
 		int typeid;
 		double execTime;		
 		double execCost;
 		
-		execInfo(int vmtypeid, double time, double cost) {
+		public execInfo(int vmtypeid, double time, double cost) {
 			typeid = vmtypeid;
 			execTime = time;
 			execCost = cost;
@@ -452,7 +452,7 @@ public class Module extends Cloudlet {
 		return profiles;
 	}
 
-	public void setMappings(HashMap<VMtype, execInfo> profiles) {
+	public void setProfiles(HashMap<VMtype, execInfo> profiles) {
 		this.profiles = profiles;
 	}
 
