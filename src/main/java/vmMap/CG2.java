@@ -180,7 +180,8 @@ public class CG2 {
 			for (Module mod: workflow.getModList()) {
 				mod.profiling(type);
 			}
-		}		
+		}	
+		
 		double budget = 3.8;
 		double ed = cg2(workflow, vmtypes, budget);
 		workflow.printSched();

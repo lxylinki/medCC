@@ -8,8 +8,6 @@ import java.io.PrintWriter;
 import java.text.DecimalFormat;
 import java.util.List;
 
-import org.cloudbus.cloudsim.Log;
-
 public class MedAlgResultswriter {
 	
 	// generate filename for results
@@ -25,7 +23,7 @@ public class MedAlgResultswriter {
 			dirprefix = dirprefix + order + "_" + size + "/";
 			filename = dirprefix + "workflow_" + order + "_" + size + "_" + id + fileformat;	
 		}
-		Log.printLine(filename);
+		System.out.println(filename);
 		return filename;
 	}
 	

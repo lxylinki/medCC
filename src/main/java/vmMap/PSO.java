@@ -1,8 +1,8 @@
-package virtualnet;
+package vmMap;
 
-public class VLink {
+public class PSO {
 
-	public VLink() {
+	public PSO() {
 		// TODO Auto-generated constructor stub
 	}
 

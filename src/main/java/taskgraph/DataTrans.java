@@ -1,15 +1,15 @@
 package taskgraph;
 
-import org.cloudbus.cloudsim.Cloudlet;
-
-public class DataTrans extends Cloudlet {
+public class DataTrans {
+	// data id
+	private final int dataId = -1;
 	
-	private String role = "Data";
+	// the ids of its end mods: serve as id
+	private int[] endMods = {-1, -1};
 	
-	// structure related
-	private int srcModId = -1;
+	private long dataSize = 1;
 	
-	private int dstModId = -1;
+	//private String role = "Data";
 	
 	// exec time and cost
 	private double cost = 0;
@@ -36,30 +36,29 @@ public class DataTrans extends Cloudlet {
 	private double tlevel = 0;
 	
 
-	public DataTrans(int dataId, long datasize) {
-		super(dataId, datasize, 1, 0, 0, null, null,null);
+	public DataTrans(long datasize) {
+		this.setDataSize(datasize);
 	}
 
 	public long getDatasize() {
-		return this.getCloudletLength();
+		return dataSize;
 	}
 
 	public int getSrcModId() {
-		return srcModId;
+		return this.endMods[0];
 	}
 
 	public void setSrcModId(int srcModId) {
-		this.srcModId = srcModId;
+		this.endMods[0] = srcModId;
 	}
 
 	public int getDstModId() {
-		return dstModId;
+		return this.endMods[1];
 	}
 
 	public void setDstModId(int dstModId) {
-		this.dstModId = dstModId;
+		this.endMods[1] = dstModId;
 	}
-
 
 	public double getCost() {
 		return cost;
@@ -126,14 +125,6 @@ public class DataTrans extends Cloudlet {
 		this.lft = lft;
 	}
 
-	public String getRole() {
-		return role;
-	}
-
-	public void setRole(String role) {
-		this.role = role;
-	}
-
 	public double getBlevel() {
 		return blevel;
 	}
@@ -148,6 +139,27 @@ public class DataTrans extends Cloudlet {
 
 	public void setTlevel(double tlevel) {
 		this.tlevel = tlevel;
+	}
+
+	public int getDataId() {
+		return dataId;
+	}
+
+
+	public long getDataSize() {
+		return dataSize;
+	}
+
+	public void setDataSize(long dataSize) {
+		this.dataSize = dataSize;
+	}
+
+	public int[] getEndMods() {
+		return endMods;
+	}
+
+	public void setEndMods(int[] endMods) {
+		this.endMods = endMods;
 	}
 
 }

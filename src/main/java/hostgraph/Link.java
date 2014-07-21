@@ -1,8 +1,8 @@
-package virtualnet;
+package hostgraph;
 
-public class VLink {
+public class Link {
 
-	public VLink() {
+	public Link() {
 		// TODO Auto-generated constructor stub
 	}
 

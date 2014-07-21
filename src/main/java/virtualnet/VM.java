@@ -1,8 +1,9 @@
 package virtualnet;
 
-import org.cloudbus.cloudsim.Vm;
-
-public class VM extends Vm {
+public class VM {
+	private int vmId = 0;
+	
+	private double mips = 1;
 	
 	private double price = 0;
 	
@@ -10,7 +11,7 @@ public class VM extends Vm {
 	
 	// vmid differs from typeid
 	public VM(int vmid, int typeid, double chargingrate, double processingpower) {
-		super(vmid, 1, processingpower, 1, 10, 10, 10, "xen", null);
+		//super(vmid, 1, processingpower, 1, 10, 10, 10, "xen", null);
 		setPrice(chargingrate);
 		setType(typeid);
 	}
@@ -33,6 +34,22 @@ public class VM extends Vm {
 
 	public void setType(int type) {
 		this.type = type;
+	}
+
+	public double getMips() {
+		return mips;
+	}
+
+	public void setMips(double mips) {
+		this.mips = mips;
+	}
+
+	public int getVmId() {
+		return vmId;
+	}
+
+	public void setVmId(int vmId) {
+		this.vmId = vmId;
 	}
 
 }

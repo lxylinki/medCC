@@ -4,16 +4,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.cloudbus.cloudsim.Cloudlet;
-
 import virtualnet.VM;
 import virtualnet.VMtype;
 
-public class Module extends Cloudlet {
+public class Module {
+	// id is the unique identifier
+	private final int modId;
+	
+	// total number of instructions
+	private long workload = 1;
 	
 	// DAG structural parameters 
-	private String role = "Module";
-	
 	private List<Module> preMods = null; // preceding modules 
 	
 	private List<Module> sucMods = null; // succeeding modules
@@ -21,6 +22,11 @@ public class Module extends Cloudlet {
 	private List<DataTrans> dataIn = null;	// incoming data transfers
 	
 	private List<DataTrans> dataOut = null; // outgoing data transfers
+	
+	// key: modId, value: datasize
+	private HashMap<Integer, Long> incoming = null; 
+	
+	private HashMap<Integer, Long> outgoing = null; 
 	
 	// resource requirement
 	private int wcpu = 1;
@@ -60,7 +66,9 @@ public class Module extends Cloudlet {
 	private double tlevel = 0;
 	
 	// parallel factor
-	private double alpha = 0.85;
+	// use default 0.85 in tcc14 simulation 
+	//private double alpha = 0.85;
+	private double alpha = 1.0;
 	
 	// sched related
 	private int vmtypeid = -1;
@@ -74,21 +82,46 @@ public class Module extends Cloudlet {
 	// execution info on all types
 	private HashMap<VMtype, execInfo> profiles = null;
 	
+	
 	/**
-	 * @param cloudletId
-	 * @param cloudletLength: workload
+	 * @param modid
+	 * @param workload
 	 */
 	
-	public Module(int modId, long workload) {
-		
-		super(modId, workload, 1, 0, 0, null, null, null);		
+	public Module(final int modId, final long workload) {
+		// unique id
+		this.modId = modId;
+		this.setWorkload(workload);
 
-		setPreMods(new ArrayList<Module>());
-		setSucMods(new ArrayList<Module>());
-		
 		// exec by procpower 1
 		setTime(getWorkload());
 		setProfiles(new HashMap<VMtype, execInfo>());
+		
+		// init lists
+		setPreMods(new ArrayList<Module>());
+		setSucMods(new ArrayList<Module>());
+		
+		setDataIn(new ArrayList<DataTrans>());
+		setDataOut(new ArrayList<DataTrans>());
+		
+		setIncoming(new HashMap<Integer, Long>());
+		setOutgoing(new HashMap<Integer, Long>());
+	}
+	
+	// add a data of datasize come from mod of id preId
+	private void addDataFrom( final int preId, final DataTrans data) {
+		if ( !(this.dataIn.contains(data))) {
+			this.dataIn.add(data);
+		}
+		this.incoming.put(preId, data.getDatasize());
+	}
+	
+	// add a data of datasize going to mod of id sucId
+	private void addDataTo(final int sucId, final DataTrans data) {
+		if (!(this.dataOut.contains(data))) {
+			this.dataOut.add(data);
+		}
+		this.outgoing.put(sucId, data.getDatasize());
 	}
 	
 	// execution time 
@@ -142,11 +175,11 @@ public class Module extends Cloudlet {
 	}
 	
 	public void initTime() {
-		this.setEst(0);
-		this.setEft(0);
-		this.setLst(0);
-		this.setLft(0);
-		this.setBuffertime(0);
+		this.setEst(0.0);
+		this.setEft(0.0);
+		this.setLst(0.0);
+		this.setLft(0.0);
+		this.setBuffertime(0.0);
 	}
 	
 	// lookup in the profile map
@@ -217,14 +250,6 @@ public class Module extends Cloudlet {
 	
 	public void addPreMod(Module mod) {
 		this.preMods.add(mod);
-	}
-
-	public int getModId() {
-		return this.getCloudletId();
-	}
-	
-	public long getWorkload() {
-		return this.getCloudletLength();
 	}
 	
 	public double getAlpha() {
@@ -321,14 +346,6 @@ public class Module extends Cloudlet {
 
 	public void setCritical(boolean critical) {
 		this.critical = critical;
-	}
-
-	public String getRole() {
-		return role;
-	}
-
-	public void setRole(String role) {
-		this.role = role;
 	}
 
 	public VM getVm() {
@@ -431,7 +448,11 @@ public class Module extends Cloudlet {
 		}
 
 	}
-
+	
+	public int getModId() {
+		return modId;
+	}
+	
 	public int getVmtypeid() {
 		return vmtypeid;
 	}
@@ -462,6 +483,30 @@ public class Module extends Cloudlet {
 
 	public void setBuffertime(double buffertime) {
 		this.buffertime = buffertime;
+	}
+
+	public long getWorkload() {
+		return workload;
+	}
+
+	public void setWorkload(long workload2) {
+		this.workload = workload2;
+	}
+
+	public HashMap<Integer, Long> getIncoming() {
+		return incoming;
+	}
+
+	public void setIncoming(HashMap<Integer, Long> incoming) {
+		this.incoming = incoming;
+	}
+
+	public HashMap<Integer, Long> getOutgoing() {
+		return outgoing;
+	}
+
+	public void setOutgoing(HashMap<Integer, Long> outgoing) {
+		this.outgoing = outgoing;
 	}
 
 }

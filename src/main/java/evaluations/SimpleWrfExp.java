@@ -27,7 +27,7 @@ import filewriters.MedAlgResultswriter;
  */
 public class SimpleWrfExp {
 
-	private static int budgetlevels = 10;
+	private static int budgetlevels = 20;
 	
 	private static int numOfMods = 8;
 	

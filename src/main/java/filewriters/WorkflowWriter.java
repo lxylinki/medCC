@@ -1,8 +1,8 @@
-package virtualnet;
+package filewriters;
 
-public class VLink {
+public class WorkflowWriter {
 
-	public VLink() {
+	public WorkflowWriter() {
 		// TODO Auto-generated constructor stub
 	}
 

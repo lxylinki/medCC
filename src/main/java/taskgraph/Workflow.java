@@ -10,9 +10,10 @@ public class Workflow {
 	private List<Module> modList = null;	
 	private List<DataTrans> dataList = null;
 	
+	
 	public Workflow( boolean data ) {
 		setModList(new ArrayList<Module>());
-		
+		// if data is needed
 		if (data) {
 			setDataList(new ArrayList<DataTrans>());
 		}
@@ -22,11 +23,25 @@ public class Workflow {
 		modList.add(mod);
 	}
 	
+	public void addData (DataTrans data) {
+		dataList.add(data);
+	}
+	
 	// get a module by its id
 	public Module getModule(int modId) {
 		for(Module mod: this.modList) {
 			if (mod.getModId() == modId) {
 				return mod;
+			}
+		}
+		return null;
+	}
+	
+	// get a data transfer by its end mod ids
+	public DataTrans getData(int srcId, int dstId) {
+		for(DataTrans data: this.dataList) {
+			if ( (data.getSrcModId()==srcId) && (data.getDstModId()==dstId) ) {
+				return data;
 			}
 		}
 		return null;

@@ -16,5 +16,5 @@ set auto x
 set auto y
 set style histogram cluster gap 2
 set style fill solid noborder
-plot 'wrfexp_8_10.dat' u 2:xtic(1) ti col lc rgb '#9AD322', '' u 3 ti col lc rgb '#C21602', '' u 4 ti col lc rgb '#3299D9', '' u 5 ti col lc rgb '#3C3C3C'
+plot 'wrfexp_8_10.dat' u 2:xtic(1) ti col lc rgb '#9AD322', '' u 3 ti col lc rgb '#C21602', '' u 4 ti col lc rgb '#3299D9', '' u 5 ti col w lines lt 6
 

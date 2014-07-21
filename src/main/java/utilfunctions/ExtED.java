@@ -1,8 +1,13 @@
-package virtualnet;
+package utilfunctions;
 
-public class VLink {
+/**
+ * Calculate exact ED with concurrent data transfers
+ * @author Linki
+ *
+ */
+public class ExtED {
 
-	public VLink() {
+	public ExtED() {
 		// TODO Auto-generated constructor stub
 	}
 

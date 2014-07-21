@@ -1,8 +1,8 @@
-package virtualnet;
+package filewriters;
 
-public class VLink {
+public class HostgraphWriter {
 
-	public VLink() {
+	public HostgraphWriter() {
 		// TODO Auto-generated constructor stub
 	}
 

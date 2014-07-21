@@ -1,10 +1,11 @@
-package virtualnet;
+package utilfunctions;
 
-public class VLink {
+// generate network graph based on 
+public class NetworkGen {
 
-	public VLink() {
+	public NetworkGen() {
 		// TODO Auto-generated constructor stub
-	}
+	} 
 
 	/**
 	 * @param args
