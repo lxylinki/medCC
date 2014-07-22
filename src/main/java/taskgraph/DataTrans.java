@@ -1,9 +1,6 @@
 package taskgraph;
 
 public class DataTrans {
-	// regular id 
-	private final int dataId;
-	
 	// the ids of its end mods
 	private int[] endMods = {-1, -1};
 	
@@ -19,7 +16,7 @@ public class DataTrans {
 	// CP related
 	private boolean critical = false;
 		
-	private int layer = 0;
+	private double layer = 0;
 		
 	private double est = 0;
 		
@@ -35,9 +32,8 @@ public class DataTrans {
 	// longest path len from entry mod
 	private double tlevel = 0;
 	
-
-	public DataTrans(final int dataId, long datasize) {
-		this.dataId = dataId;
+	// construct only by size
+	public DataTrans(long datasize) {
 		this.setDataSize(datasize);
 	}
 
@@ -86,7 +82,7 @@ public class DataTrans {
 		this.critical = critical;
 	}
 
-	public int getLayer() {
+	public double getLayer() {
 		return layer;
 	}
 
@@ -140,15 +136,6 @@ public class DataTrans {
 
 	public void setTlevel(double tlevel) {
 		this.tlevel = tlevel;
-	}
-
-	public int getDataId() {
-		return dataId;
-	}
-
-
-	public long getDataSize() {
-		return dataSize;
 	}
 
 	public void setDataSize(long dataSize) {

@@ -88,7 +88,7 @@ public class Module {
 	 * @param workload
 	 */
 	
-	public Module(final int modId, final long workload) {
+	public Module(final int modId, long workload) {
 		// unique id
 		this.modId = modId;
 		this.setWorkload(workload);

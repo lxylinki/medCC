@@ -29,20 +29,29 @@ public class Workflow {
 	
 	// get a module by its id
 	public Module getModule(int modId) {
-		for(Module mod: this.modList) {
-			if (mod.getModId() == modId) {
-				return mod;
+		if (this.modList.get(modId).getModId() == modId) {
+			return this.modList.get(modId);
+		} else {
+			for(Module mod: this.modList) {
+				if (mod.getModId() == modId) {
+					return mod;
+				}
 			}
 		}
 		return null;
 	}
 	
-	// get all modules at certain layer
-	public List<Module> modsAtLayer(int layerId) {
-		//TODO
-		return null;		
+	// get all mods at certain layer
+	public List<Module> getModsAtLayer(int layer) {
+		List<Module> result = new ArrayList<Module>();
+		for (Module mod: this.modList) {
+			if (mod.getLayer() == layer) {
+				result.add(mod);
+			}
+		}
+		return result;
 	}
-	
+		
 	// get a data transfer by its end mod ids
 	public DataTrans getData(int srcId, int dstId) {
 		for(DataTrans data: this.dataList) {
@@ -80,6 +89,34 @@ public class Workflow {
 	public Module getExitMod() {
 		int exitid = (modList.size() - 1);
 		return modList.get(exitid);
+	}
+	
+	// based on unit 1
+	public double getCCR() {
+		long totalworkload = 0;
+		for (Module mod: this.getModList()) {
+			totalworkload += mod.getWorkload();
+		}
+		
+		long totaldatasize = 0;
+		for (DataTrans ds: this.getDataList()) {
+			totaldatasize += ds.getDatasize();
+		}
+		
+		double result = (totaldatasize/totalworkload);
+		return result;
+	}
+	
+	// avg degree
+	public double getAvgDegree() {
+		return ((this.getSize()*2)/this.getOrder());
+	}
+	
+	public double getVLR() {
+		int layers = this.getNumOfLayers();
+		int mods = this.getOrder();
+		double result = (mods/layers);
+		return result;
 	}
 	
 	public void printTimeInfo() {
