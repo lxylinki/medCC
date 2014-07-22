@@ -1,10 +1,10 @@
 package taskgraph;
 
 public class DataTrans {
-	// data id
-	private final int dataId = -1;
+	// regular id 
+	private final int dataId;
 	
-	// the ids of its end mods: serve as id
+	// the ids of its end mods
 	private int[] endMods = {-1, -1};
 	
 	private long dataSize = 1;
@@ -36,7 +36,8 @@ public class DataTrans {
 	private double tlevel = 0;
 	
 
-	public DataTrans(long datasize) {
+	public DataTrans(final int dataId, long datasize) {
+		this.dataId = dataId;
 		this.setDataSize(datasize);
 	}
 

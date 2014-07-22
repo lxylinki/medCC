@@ -109,7 +109,7 @@ public class Module {
 	}
 	
 	// add a data of datasize come from mod of id preId
-	private void addDataFrom( final int preId, final DataTrans data) {
+	public void addDataFrom( final int preId, final DataTrans data) {
 		if ( !(this.dataIn.contains(data))) {
 			this.dataIn.add(data);
 		}
@@ -117,7 +117,7 @@ public class Module {
 	}
 	
 	// add a data of datasize going to mod of id sucId
-	private void addDataTo(final int sucId, final DataTrans data) {
+	public void addDataTo(final int sucId, final DataTrans data) {
 		if (!(this.dataOut.contains(data))) {
 			this.dataOut.add(data);
 		}
@@ -489,8 +489,8 @@ public class Module {
 		return workload;
 	}
 
-	public void setWorkload(long workload2) {
-		this.workload = workload2;
+	public void setWorkload(long workload) {
+		this.workload = workload;
 	}
 
 	public HashMap<Integer, Long> getIncoming() {

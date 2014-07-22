@@ -21,11 +21,8 @@ public class Workflowreaderlite {
 	public static void readliteworkflow( Workflow workflow, int order, int size, int id, boolean tiny) {
 		
 		if (workflow != null) {
-			if (workflow.getModList() != null) {
+			if ( !(workflow.getModList().isEmpty())) {
 				workflow.setModList(new ArrayList<Module>());
-			}
-			if (workflow.getDataList() != null) {
-				workflow.setDataList(new ArrayList<DataTrans>());
 			}
 		}
 		

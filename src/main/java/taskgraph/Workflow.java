@@ -10,7 +10,6 @@ public class Workflow {
 	private List<Module> modList = null;	
 	private List<DataTrans> dataList = null;
 	
-	
 	public Workflow( boolean data ) {
 		setModList(new ArrayList<Module>());
 		// if data is needed
@@ -19,6 +18,7 @@ public class Workflow {
 		}
 	}
 	
+	// adding components
 	public void addModule (Module mod) {
 		modList.add(mod);
 	}
@@ -35,6 +35,12 @@ public class Workflow {
 			}
 		}
 		return null;
+	}
+	
+	// get all modules at certain layer
+	public List<Module> modsAtLayer(int layerId) {
+		//TODO
+		return null;		
 	}
 	
 	// get a data transfer by its end mod ids
@@ -61,6 +67,11 @@ public class Workflow {
 		size = (size/2);
 		return size;
 	}	
+	
+	// total number of layers
+	public int getNumOfLayers() {
+		return this.getExitMod().getLayer();
+	}
 	
 	public Module getEntryMod() {
 		return modList.get(0);
