@@ -1,55 +1,35 @@
 package virtualnet;
 
 public class VM {
-	private int vmId = 0;
+	private final int vmId;
 	
-	private double mips = 1;
+	private VMtype vmtype = null;
 	
-	private double price = 0;
-	
-	private int type = 0;
+	private int currentHostId = -1;
 	
 	// vmid differs from typeid
-	public VM(int vmid, int typeid, double chargingrate, double processingpower) {
-		//super(vmid, 1, processingpower, 1, 10, 10, 10, "xen", null);
-		setPrice(chargingrate);
-		setType(typeid);
+	public VM(final int vmid, VMtype vmtype) {
+		this.vmId = vmid;
+		this.vmtype = vmtype;
 	}
 
-	public double getProcessingPower() {
-		return this.getMips();
-	}
-	
-	public double getPrice() {
-		return price;
-	}
-
-	public void setPrice(double price) {
-		this.price = price;
-	}
-
-	public int getType() {
-		return type;
-	}
-
-	public void setType(int type) {
-		this.type = type;
-	}
-
-	public double getMips() {
-		return mips;
-	}
-
-	public void setMips(double mips) {
-		this.mips = mips;
-	}
-
+	// VM Id
 	public int getVmId() {
 		return vmId;
 	}
+	
+	// type Id
+	public int getTypeID() {
+		return this.vmtype.getTypeid();
+	}
+	
+	// id of current host
+	public int getCurrentHostId() {
+		return currentHostId;
+	}
 
-	public void setVmId(int vmId) {
-		this.vmId = vmId;
+	public void setCurrentHostId(int currentHostId) {
+		this.currentHostId = currentHostId;
 	}
 
 }

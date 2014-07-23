@@ -1,8 +1,8 @@
-package virtualnet;
+package filereaders;
 
-public class VLink {
+public class NetworkReader {
 
-	public VLink() {
+	public NetworkReader() {
 		// TODO Auto-generated constructor stub
 	}
 

@@ -1,7 +1,7 @@
 package virtualnet;
 
 public class VMtype {
-	private int typeid;
+	private final int typeid;
 	
 	// number of cores
 	private int corenum = 0;
@@ -15,11 +15,11 @@ public class VMtype {
 	// max procpower that can be utilized
 	private double maxpower = 0;
 
-	
-	public VMtype(int typeid, int corenum, double unitprocpower, double unitprice) {
-		setTypeid(typeid);
+	public VMtype(final int typeid, int corenum, double unitprocpower, double unitprice) {
+		this.typeid = typeid;
 		setCorenum(corenum);
 		setUnitprocpower(unitprocpower);
+		
 		// linear to num of cores
 		setPrice(unitprice*corenum);
 		setMaxpower(unitprocpower*corenum);
@@ -60,10 +60,5 @@ public class VMtype {
 	public int getTypeid() {
 		return typeid;
 	}
-
-	public void setTypeid(int typeid) {
-		this.typeid = typeid;
-	}
-	
 	
 }

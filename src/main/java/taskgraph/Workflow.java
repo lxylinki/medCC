@@ -6,7 +6,6 @@ import java.util.List;
 import utilfunctions.CriticalPath;
 
 public class Workflow {
-
 	private List<Module> modList = null;	
 	private List<DataTrans> dataList = null;
 	
@@ -119,6 +118,7 @@ public class Workflow {
 		return result;
 	}
 	
+	
 	public void printTimeInfo() {
 		if (this.getModList() != null) {
 			for (Module mod: this.getModList()) {
@@ -130,16 +130,18 @@ public class Workflow {
 		}
 	}
 	
+	
 	public void printStructInfo() {
-		// if data transfer is not counted
+		// if data transfer is not counted: for old version simulation
 		if (this.getDataList() == null) {
 			if (this.getModList() != null) {
 				System.out.printf("|V|=%d, |E|=%d\n", this.getOrder(), this.getSize());
+				
 				for (Module mod: this.getModList()) {
 					//System.out.printf("mod %d\n", mod.getModId());
 					if ( mod.getOutdegree() > 0) {
 						for (Module suc: mod.getSucMods()) {
-							System.out.printf("mod%d(load %d, layer %d) ---> mod%d(load %d, layer %d)\n", 
+							System.out.printf("mod%d(load %d, layer %d) ---> %d(load %d, layer %d)\n", 
 									mod.getModId(), mod.getWorkload(), mod.getLayer(),
 									suc.getModId(), suc.getWorkload(), suc.getLayer());
 						}
@@ -151,21 +153,30 @@ public class Workflow {
 				}
 			} else {
 				System.out.println("empty workflow");
+				System.exit(1);
 			}
-		} else {
-			//TODO: test this
+		} else { // for regular workflow with data transfers
 			if (this.getModList() != null) {
-				System.out.printf("|V|=%d, |E|=%d\n", this.getOrder(), this.getSize());
+				System.out.printf("|V|=%d, |E|=%d, CCR=%.2f, AvgDeg=%.2f\n\n", 
+						this.getOrder(), this.getSize(),this.getCCR(), this.getAvgDegree());
+				
+				// print mods
+				System.out.println("id   workload   alpha   ram   disk   layer");
+				for (Module mod: this.getModList()) {
+					System.out.printf("%d\t%d\t%.2f\t%d\t%d\t%d\n", 
+							mod.getModId(), mod.getWorkload(), 
+							mod.getAlpha(), mod.getWram(), mod.getWdisk(), mod.getLayer());
+				}
+				System.out.print("\n");
+				
+				// print data
+				System.out.println("src    dst    datasize");
 				for (DataTrans data: this.getDataList()) {
-					Module srcMod = this.getModule(data.getSrcModId());
-					Module dstMod = this.getModule(data.getDstModId());
-					// print datasizes
-					System.out.printf("mod%d(%d) ---> mod%d(%d), %d\n", 
-							srcMod.getModId(), srcMod.getWorkload(),
-							dstMod.getModId(), dstMod.getWorkload(), data.getDatasize());
+					System.out.printf("%d\t%d\t%d\n", data.getSrcModId(), data.getDstModId(), data.getDatasize());
 				}
 			} else {
-				System.out.println("empty workflow");
+				System.out.println("Error: empty workflow");
+				System.exit(1);
 			}
 		}
 		

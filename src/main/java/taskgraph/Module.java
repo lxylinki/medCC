@@ -28,7 +28,7 @@ public class Module {
 	
 	private HashMap<Integer, Long> outgoing = null; 
 	
-	// resource requirement
+	// comp resource allocation
 	private int wcpu = 1;
 	
 	private int wram = 1;
@@ -94,7 +94,7 @@ public class Module {
 		this.setWorkload(workload);
 
 		// exec by procpower 1
-		setTime(getWorkload());
+		setTime(this.getWorkload());
 		setProfiles(new HashMap<VMtype, execInfo>());
 		
 		// init lists

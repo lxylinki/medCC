@@ -1,8 +1,14 @@
 package hostgraph;
 
-public class Network {
+import java.util.List;
 
-	public Network() {
+public class Network {
+	// components
+	List<Host> hostList = null;
+	List<Link> linkList = null;
+	
+	// if graph is complete
+	public Network(boolean complete) {
 		// TODO Auto-generated constructor stub
 	}
 

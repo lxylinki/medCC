@@ -6,9 +6,7 @@ public class DataTrans {
 	
 	private long dataSize = 1;
 	
-	//private String role = "Data";
-	
-	// exec time and cost
+	// trans time and cost
 	private double cost = 0;
 	
 	private double time = 0;
@@ -35,6 +33,8 @@ public class DataTrans {
 	// construct only by size
 	public DataTrans(long datasize) {
 		this.setDataSize(datasize);
+		// default as datasize
+		this.setTime(datasize);
 	}
 
 	public long getDatasize() {

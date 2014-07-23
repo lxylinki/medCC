@@ -8,24 +8,31 @@ import taskgraph.DataTrans;
 import taskgraph.Module;
 import taskgraph.Workflow;
 
+import utilfunctions.NetworkGen;
+import filewriters.WorkflowWriter;
+
 /**
  * Generate workflows based on CCR and VLR
  * @author Linki
  *
  */
 public class WorkflowGen {
+	// lower bound when randomly generating values
+	private static long minworkload = 10;
 	
-	// default generating
-	public static void defaultGen(int numOfMods, int numOfEdges) {
-		int minedges = numOfMods -1;
-		int maxedges = numOfMods*(numOfMods-1)/2;
-		
-		if ( (numOfEdges < minedges) || (numOfEdges > maxedges)) {
-			System.out.printf("Edges number range: %d, %d\n", minedges, maxedges);
-			System.exit(1);
-		}
-		//TODO
-	}
+	private static long mindatasize = 10;
+	
+	private static int minram = 5;
+	
+	private static int mindisk = 5;
+	
+	// based on network parameters: for generating resource requirement
+	public static int avg_procpower = NetworkGen.maxcpu/2;
+	
+	public static int avg_ram = NetworkGen.maxram/2;
+	
+	public static int avg_disk = NetworkGen.maxdisk/2;
+	
 	
 	// util func in case mods are out of index order
 	public static Module getModFromList(int modId, List<Module> mods) {
@@ -41,7 +48,6 @@ public class WorkflowGen {
 		return null;
 	}
 	
-	
 	// randomly select a mod from list
 	public static Module randomModChoice(List<Module> mods, Random selector) {
 		int len = mods.size();
@@ -54,19 +60,31 @@ public class WorkflowGen {
 		if ( !(mods.isEmpty()) || mods == null) {
 			mods = new ArrayList<Module>();
 		}
+		
+		//System.out.println("id   workload   alpha   ram   disk");
 		for (int i=0; i<numOfMods; i++) {
 			Module mod;
-			// if entry/exit: trivial load
+			// if entry/exit: trivial load, no parallel, default resource requirement:1
 			if (i==0 || i==numOfMods-1) {
 				mod = new Module(i, 1);
+				mod.setAlpha(0.0);
 			} else {
 				long frac = (long)(loadrange*myrandom.nextDouble());
 				mod = new Module(i, (minworkload + frac));
+				
+				// parallel: 0.0-1.0
+				double alpha = myrandom.nextDouble();
+				mod.setAlpha(alpha);
+				
+				// resource requirement: 1 to avg
+				int wram = minram + myrandom.nextInt(avg_ram);
+				int wdisk = mindisk + myrandom.nextInt(avg_disk);
+				
+				mod.setWram(wram);
+				mod.setWdisk(wdisk);
 			}
-			
-			// TODO: generate resource requirements and alpha value
 			mods.add(mod);
-			System.out.printf("mod %d: workload %d\n", i, mod.getWorkload());
+			//System.out.printf("%d\t%d\t%.2f\t%d\t%d\n", i, mod.getWorkload(), mod.getAlpha(), mod.getWram(), mod.getWdisk());
 		}
 	}
 	
@@ -118,9 +136,10 @@ public class WorkflowGen {
 			}
 		}// end else if	
 		
+		/**
 		for (int i=0; i<numOfLayers; i++) {
 			System.out.printf("layers[%d] %d\n", i, layers[i]);
-		}
+		}*/
 	}
 	
 	public static void connect(Module pre, Module suc, DataTrans data) {
@@ -162,7 +181,7 @@ public class WorkflowGen {
 					mod.setWorkload(newworkload);
 				}
 			} else if (ratio < 1) { // if current comp too heavy
-				System.out.println("increasing datasizes...");
+				//System.out.println("increasing datasizes...");
 				
 				// need to inc data sizes by 1/ratio
 				for (DataTrans data: workflow.getDataList()) {
@@ -183,12 +202,9 @@ public class WorkflowGen {
 	 * @param myrandom
 	 */
 	public static void buildBasicDataEdges( long mindatasize, long dsrange, Workflow workflow, Random myrandom) {
-		/** each mod has at least: 
+		/** ensure each mod has: 
 		 * 1 incoming data from mod in layer mod.layer-1
-		 * 
-		 * 1 outgoing data to mod in layer mod.layer+1 or larger:
-		 * let the first outgoing data dest to mod.layer+1
-		 * then may add outgoing edges to later layers (TODO not in this func)
+		 * 1 outgoing data to mod in layer mod.layer+1
 		 */
 		for (Module mod: workflow.getModList()) {
 			// skip entry mod
@@ -235,7 +251,7 @@ public class WorkflowGen {
 	}
 	
 	/**
-	 * Build cross-layer data edges
+	 * Build cross-layer data edges for dense DAG
 	 * @param mindatasize
 	 * @param dsrange
 	 * @param workflow
@@ -243,7 +259,7 @@ public class WorkflowGen {
 	 */
 	public static void buildExtraDataEdges( long mindatasize, long dsrange, Workflow workflow, Random myrandom) {
 		/**
-		 * each mod has 1 outgoing data to a mod for each layer > mod.layer+1
+		 * ensure each mod has 1 outgoing data to a mod in each layer > mod.layer+1
 		 */
 		
 		for (Module mod: workflow.getModList()) {
@@ -274,22 +290,22 @@ public class WorkflowGen {
 	 * @param avgworkload (>10)
 	 * @param CCR: computation-communication
 	 */
-	public static void workflowGen(int numOfMods, double VLR, long avgworkload, double CCR, boolean dense) {
-		// dir to write to
-		//String dirprefix = "src/main/resources/input/workflowdata2014/";
+	public static void workflowGen( Workflow workflow, int numOfMods, double VLR, long avgworkload, double CCR, boolean dense) {
+		// check input
+		if ((workflow == null) || (! (workflow.getModList().isEmpty()))) {
+			workflow = new Workflow(true);
+		}
 		
 		// get number of layers and avg datasize
 		int numOfLayers = (int) Math.ceil(numOfMods/VLR);
 		
 		// always pick 10 as min load and avg*2 as max
-		long minworkload = 10;
 		long maxworkload = avgworkload*2;	
 		long loadrange = maxworkload - minworkload;
 		
 		// random num generator
 		Random myrandom = new Random();
 		
-		Workflow workflow = new Workflow(true);
 		// generate mods
 		List<Module> mods = workflow.getModList();
 		modListGen(numOfMods, minworkload, loadrange, myrandom, mods);
@@ -324,8 +340,8 @@ public class WorkflowGen {
 					
 		// generate data according to mods
 		long avgdatasize = (long) Math.ceil(avgworkload*CCR);
+		
 		// always pick 10 as min size and avg*2 as max
-		long mindatasize = 10;
 		long maxdatasize = avgdatasize*2;	
 		long dsrange = maxdatasize - mindatasize;
 		
@@ -339,23 +355,18 @@ public class WorkflowGen {
 		
 		// adjust datasize/workload to meet target CCR
 		adjustCCR(workflow, CCR);
-		
-		/**
-		workflow.printStructInfo();
-		System.out.println(workflow.getCCR());
-		System.out.println(workflow.getAvgDegree());
-		*/
-		
-		// write to file
-		
 	}
 
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-		workflowGen(20, 3.5, 100, 2.50, true);
+		Workflow workflow = new Workflow(true);
+		
+		
+		workflowGen(workflow, 50, 3.5, 100, 10.50, true);
+		//workflow.printStructInfo();
+		WorkflowWriter.writeWorkflow(workflow, 0);
 	}
 
 }

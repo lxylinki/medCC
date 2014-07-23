@@ -7,11 +7,11 @@ import virtualnet.VMtype;
 
 public class VmTypesGen {
 
-	// unit processing power in a VM
-	private static int basemips = 10;
+	// unit processing power in a VM i.e. the proc power of one vcpu
+	public static int basemips = 1;
 	
 	// charging rate of one proc unit
-	private static double baseprice = 0.01;
+	private static double baseprice = 0.001;
 	
 	// list of types increasing in procpower and price
 	public static List<VMtype> vmTypeList(int numOfTypes) {
@@ -38,6 +38,7 @@ public class VmTypesGen {
 	}
 	
 	// list of types increasing in procpower and price
+	// Only for tmp usage in exp calculation
 	public static List<VMtype> vmTypeList(int basemips, double baseprice, int numOfTypes) {
 		List <VMtype> types = new ArrayList<VMtype>();
 		
@@ -70,5 +71,4 @@ public class VmTypesGen {
 		}
 		return null;		
 	}
-
 }
