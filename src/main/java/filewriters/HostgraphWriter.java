@@ -2,6 +2,10 @@ package filewriters;
 
 public class HostgraphWriter {
 
+	public static void writeTimeSeries() {
+		
+	}
+	
 	public HostgraphWriter() {
 		// TODO Auto-generated constructor stub
 	}

@@ -1,6 +1,10 @@
 package filereaders;
 
 public class NetworkReader {
+	
+	public static void readTimeSeries() {
+		
+	}
 
 	public NetworkReader() {
 		// TODO Auto-generated constructor stub

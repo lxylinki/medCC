@@ -34,6 +34,7 @@ public class NetworkGen {
 		
 	}
 	
+	
 	// generate availability table for cpu/ram/disk/link
 	public static void timeSeriesGen(long maxtime, int maxvalue) {
 		
@@ -44,7 +45,7 @@ public class NetworkGen {
 	 * @param numOfHosts
 	 */
 	public static void dynamicNetworkGen(int numOfHosts) {
-		// TODO Auto-generated constructor stub
+		
 	} 
 
 	/**

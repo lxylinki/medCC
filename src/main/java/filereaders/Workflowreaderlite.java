@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import taskgraph.DataTrans;
 import taskgraph.Module;
 import taskgraph.Workflow;
 import utilfunctions.CriticalPath;

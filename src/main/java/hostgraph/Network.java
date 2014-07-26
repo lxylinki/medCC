@@ -7,8 +7,8 @@ public class Network {
 	List<Host> hostList = null;
 	List<Link> linkList = null;
 	
-	// if graph is complete
-	public Network(boolean complete) {
+	// if dynamic
+	public Network(boolean dynamic) {
 		// TODO Auto-generated constructor stub
 	}
 
