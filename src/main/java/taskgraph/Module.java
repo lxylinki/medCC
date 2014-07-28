@@ -114,6 +114,15 @@ public class Module {
 		setOutgoing(new HashMap<Integer, Long>());
 	}
 	
+	
+	public Long dataSizeFrom(int preId) {
+		return this.incoming.get(preId);
+	}
+	
+	public Long dataSizeTo(int sucId) {
+		return this.outgoing.get(sucId);
+	}
+	
 	// add a data of datasize come from mod of id preId
 	public void addDataFrom( final int preId, final DataTrans data) {
 		if ( !(this.dataIn.contains(data))) {

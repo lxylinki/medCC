@@ -382,6 +382,81 @@ public class WorkflowGen {
 		return maxNumOfEdges;
 	}
 	
+	/** default generating */
+	public static void workflowDefaultGen(Workflow workflow, long avgworkload, int numOfMods, int numOfEdges) {
+		// check input
+		if ((workflow == null) || (! (workflow.getModList().isEmpty()))) {
+			workflow = new Workflow(true);
+		}
+		// always pick 10 as min load and avg*2 as max
+		long maxworkload = avgworkload*2;	
+		long loadrange = maxworkload - minworkload;
+		
+		// random num generator
+		Random myrandom = new Random();
+		
+		// generate mods
+		List<Module> mods = workflow.getModList();
+		modListGen(numOfMods, minworkload, loadrange, myrandom, mods);
+		
+		// id: 0-modId, modId-(numOfMods-1)
+		int maxId = numOfMods-1;
+		
+		// randomly choose a pre mod and a suc mod in terms of mod id
+		for (Module mod: workflow.getModList()) {
+			int myId = mod.getModId();
+			// entry mod only have outgoing edges
+			if (myId == 0) {
+				int sucId = myId + 1 + myrandom.nextInt(maxId);
+				Module suc = workflow.getModule(sucId);
+				mod.addSucMod(suc);
+				suc.addPreMod(mod);	
+				
+			} else if (myId == maxId) {
+				// exit mod only have incoming edges
+				int preId = myrandom.nextInt(myId);
+				Module pre = workflow.getModule(preId);
+				mod.addPreMod(pre);
+				pre.addSucMod(mod);
+			} else {
+				// regular mods
+				int preId = myrandom.nextInt(myId);
+				int sucId = myId + 1 + myrandom.nextInt(maxId-myId);
+				Module pre = workflow.getModule(preId);
+				Module suc = workflow.getModule(sucId);
+				
+				// add pre mod
+				mod.addPreMod(pre);
+				pre.addSucMod(mod);
+				
+				// add suc mod
+				mod.addSucMod(suc);
+				suc.addPreMod(mod);				
+			}
+		}// end for
+		
+		if (workflow.getSize() < numOfEdges) {
+			int edgesToAdd = numOfEdges - workflow.getSize();
+			while (edgesToAdd > 0) {
+				// pick a mid num within [1, maxId-1]
+				int myId = 1 + myrandom.nextInt(maxId-1);
+				int preId = myrandom.nextInt(myId);
+				int sucId = myId + 1 + myrandom.nextInt(maxId-myId);
+				// pick 2 mods, add edge
+				Module pre = workflow.getModule(preId);
+				Module suc = workflow.getModule(sucId);
+				pre.addSucMod(suc);
+				suc.addPreMod(pre);
+				edgesToAdd--;
+			}
+			
+		} else {
+			System.out.println("Error: too few edges requested.");
+			System.exit(1);
+		}		
+	}
+	
+	
 	/** need some knowledge about network: 1 is the base in all work
 	 * let base proc=1, base bw=1
 	 * 
@@ -473,12 +548,14 @@ public class WorkflowGen {
 	public static void main(String[] args) {
 		Workflow workflow = new Workflow(true);
 		
-		// set VLR as 1: default generating alg
-		//workflowGen(workflow, 10, 1, 100, 10.50, 0.0);
-		workflowGen(workflow, 20, 1, 100, 5.50, 0.6);
+		// fixed dense produces fixed edge number
+		//workflowGen(workflow, 20, 1, 100, 5.50, 0.3);
+		workflowDefaultGen(workflow, 100, 20, 90);
 		
 		//workflow.printStructInfo();
-		WorkflowWriter.writeWorkflow(workflow, 1);
+		// write both formats
+		WorkflowWriter.writeLiteWorkflow(workflow, 1);
+		//WorkflowWriter.writeWorkflow(workflow, 1);
 	}
 
 }

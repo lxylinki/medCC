@@ -6,7 +6,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DecimalFormat;
 
-import taskgraph.DataTrans;
 import taskgraph.Module;
 import taskgraph.Workflow;
 
@@ -24,8 +23,8 @@ public class WorkflowWriter {
 		String name = null;
 		
 		if (full) {
-			int vlr = (int) workflow.getVLR();
-			int ccr = (int) workflow.getCCR();
+			int vlr = (int) Math.ceil(workflow.getVLR());
+			int ccr = (int) Math.ceil(workflow.getCCR());
 			name = "workflow_" + modnum + "_" + edgenum + "_" + vlr + "_" + ccr + "_" + fileId + format;
 		} else {
 			name = "workflow_" + modnum + "_" + edgenum + "_" + fileId + format;
@@ -37,7 +36,46 @@ public class WorkflowWriter {
 	
 	// no data info
 	public static void writeLiteWorkflow(Workflow workflow, int fileId) {
-		System.out.println(filename(workflow, fileId, false));
+		// simpler file name
+		String filename = dirprefix + filename(workflow, fileId, false);
+		
+		File file = new File(filename);
+		file.getParentFile().mkdirs();
+		
+		// formatting
+		String tab = "      ";
+		
+		try {
+			// not appending but rewrite as new
+			BufferedWriter line = new BufferedWriter(new FileWriter(filename, false));
+			line.write("|V|=" + workflow.getOrder() +
+					 ", |E|=" + workflow.getSize() 	+ "\n\n");
+			
+			// mod info header line
+			line.write("id   workload\n");
+			for (Module mod: workflow.getModList()) {
+				String modinfo = mod.getModId() + tab +  mod.getWorkload() +"\n";
+				line.write(modinfo);
+			}
+			line.write("\n");
+			
+			// edge info header line
+			line.write("src    dst\n");
+			for (Module mod: workflow.getModList()) {
+				if (mod.getOutdegree()>0) {
+					for (Module suc: mod.getSucMods()) {
+						String edgeinfo = mod.getModId() + tab + suc.getModId() + "\n";
+						line.write(edgeinfo);
+					}
+				}
+			}
+			line.close();
+			
+		} catch (IOException ioe) {
+			System.out.println(ioe);
+			System.exit(1);
+		}		
+		
 	}
 	
 	// full workflow
@@ -74,9 +112,21 @@ public class WorkflowWriter {
 			
 			// data info header line
 			line.write("src    dst    datasize\n");
+			
+			/**
 			for (DataTrans data: workflow.getDataList()) {
 				String datainfo = data.getSrcModId() + tab + data.getDstModId() + tab + data.getDatasize() + "\n";
 				line.write(datainfo);
+			}*/
+			
+			for (Module mod: workflow.getModList()) {
+				if (mod.getOutdegree()>0) {
+					for (Module suc: mod.getSucMods()) {
+						int sucId = suc.getModId();
+						String datainfo = mod.getModId() + tab + sucId + tab + mod.dataSizeTo(sucId) + "\n";
+						line.write(datainfo);
+					}
+				}
 			}
 			line.close();
 			
