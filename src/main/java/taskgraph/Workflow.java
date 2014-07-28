@@ -67,7 +67,7 @@ public class Workflow {
 
 	// total number of modules
 	public int getOrder() {
-		return modList.size();
+		return this.modList.size();
 	}
 	
 	// total number of edges

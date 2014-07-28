@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 import os
 
 # statistics on optimal comparison
@@ -49,8 +50,9 @@ def optstats(mods, edges):
 if __name__=='__main__':
     Mods = [5, 6, 7, 8]
     Edges = [6, 11, 14, 21]
+    scales = 4
 
-    for j in range (0,4):
+    for j in range (0,scales):
         m = Mods[j]
         e = Edges[j]
         optstats(m, e)

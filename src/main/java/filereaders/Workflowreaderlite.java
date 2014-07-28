@@ -17,7 +17,14 @@ public class Workflowreaderlite {
 
 	private static BufferedReader input;
 	
-	// read file workflow_{order}_{size}_{id}.txt in new format and fill the info to new workflow
+	/** read file workflow_{order}_{size}_{id}.txt in new format and fill the info to new workflow
+	 * 
+	 * @param workflow
+	 * @param order
+	 * @param size
+	 * @param id
+	 * @param tiny
+	 */
 	public static void readliteworkflow(Workflow workflow, int order, int size, int id, boolean tiny) {
 		if (workflow != null) {
 			if ( !(workflow.getModList().isEmpty())) {
@@ -88,7 +95,14 @@ public class Workflowreaderlite {
 		
 	}
 
-	// read file {tiny}workflow_{order}_{size}_{id}.txt and fill the info to new workflow
+	/** read file {tiny}workflow_{order}_{size}_{id}.txt in old format (2012) and fill the info to new workflow
+	 * 
+	 * @param workflow
+	 * @param order
+	 * @param size
+	 * @param id
+	 * @param tiny
+	 */
 	public static void readliteworkflow12( Workflow workflow, int order, int size, int id, boolean tiny) {
 		
 		if (workflow != null) {

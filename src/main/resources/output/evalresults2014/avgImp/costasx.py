@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 # generate one file x-asix is budget level 1-20
 import os
 import math

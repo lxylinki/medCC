@@ -127,7 +127,8 @@ public class CostConstrMed {
 		//List <VMtype> vmtypes = new ArrayList<VMtype>();
 		
 		// 10 file index
-		for (int fileid=0; fileid<10; fileid++) {
+		// new: 50 file indexes
+		for (int fileid=0; fileid<50; fileid++) {
 			// 20 problem index
 			for (int i=0; i<20; i++) {
 				int mods = numOfMods[i];

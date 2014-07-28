@@ -313,7 +313,8 @@ public class WorkflowGen {
 						if ( !(mod.getSucMods().contains(farmod))) {
 							sucCands.add(farmod);
 						} 					
-					}
+					}// end suc for
+					
 					// no more mods can be added from this layer
 					// continue to look into next layer
 					if (sucCands.isEmpty()) {
@@ -327,20 +328,22 @@ public class WorkflowGen {
 					DataTrans outdata = new DataTrans(outdatasize);
 					connect(mod, suc, outdata);
 					workflow.addData(outdata);	
+					
 					// decrement target num
 					targetNum --;
 					if (targetNum == 0) {
 						break;
 					}
 				}// end layers for
+				
 				if (targetNum == 0) {
 					break;
 				}
-				System.out.println(targetNum);
 			}// end mods for
 		}// end while
-
 	}
+	
+	
 	/**
 	 * Provide number of layers and the module distribution on each layer to calculate edge bounds
 	 * 
@@ -385,9 +388,11 @@ public class WorkflowGen {
 	/** default generating */
 	public static void workflowDefaultGen(Workflow workflow, long avgworkload, int numOfMods, int numOfEdges) {
 		// check input
-		if ((workflow == null) || (! (workflow.getModList().isEmpty()))) {
-			workflow = new Workflow(true);
+		if ((workflow == null) || (workflow.getOrder()>0)) {
+			workflow = new Workflow(false);
 		}
+		//TODO: check max edges
+		
 		// always pick 10 as min load and avg*2 as max
 		long maxworkload = avgworkload*2;	
 		long loadrange = maxworkload - minworkload;
@@ -396,8 +401,9 @@ public class WorkflowGen {
 		Random myrandom = new Random();
 		
 		// generate mods
-		List<Module> mods = workflow.getModList();
+		List<Module> mods = new ArrayList<Module>();
 		modListGen(numOfMods, minworkload, loadrange, myrandom, mods);
+		workflow.setModList(mods);
 		
 		// id: 0-modId, modId-(numOfMods-1)
 		int maxId = numOfMods-1;
@@ -413,44 +419,63 @@ public class WorkflowGen {
 				suc.addPreMod(mod);	
 				
 			} else if (myId == maxId) {
-				// exit mod only have incoming edges
-				int preId = myrandom.nextInt(myId);
-				Module pre = workflow.getModule(preId);
-				mod.addPreMod(pre);
-				pre.addSucMod(mod);
+				if (mod.getIndegree() == 0) {
+					// exit mod only have incoming edges
+					int preId = myrandom.nextInt(myId);
+					Module pre = workflow.getModule(preId);
+					mod.addPreMod(pre);
+					pre.addSucMod(mod);
+				}
+	
 			} else {
 				// regular mods
-				int preId = myrandom.nextInt(myId);
-				int sucId = myId + 1 + myrandom.nextInt(maxId-myId);
-				Module pre = workflow.getModule(preId);
-				Module suc = workflow.getModule(sucId);
+				if (mod.getIndegree() == 0) {
+					int preId = myrandom.nextInt(myId);
+					Module pre = workflow.getModule(preId);
+					// add pre mod
+					mod.addPreMod(pre);
+					pre.addSucMod(mod);
+				}
 				
-				// add pre mod
-				mod.addPreMod(pre);
-				pre.addSucMod(mod);
-				
-				// add suc mod
-				mod.addSucMod(suc);
-				suc.addPreMod(mod);				
+				if (mod.getOutdegree() == 0) {
+					int sucId = myId + 1 + myrandom.nextInt(maxId-myId);
+					Module suc = workflow.getModule(sucId);
+					
+					// add suc mod
+					mod.addSucMod(suc);
+					suc.addPreMod(mod);		
+				}		
 			}
 		}// end for
-		
+	
 		if (workflow.getSize() < numOfEdges) {
 			int edgesToAdd = numOfEdges - workflow.getSize();
-			while (edgesToAdd > 0) {
-				// pick a mid num within [1, maxId-1]
-				int myId = 1 + myrandom.nextInt(maxId-1);
-				int preId = myrandom.nextInt(myId);
-				int sucId = myId + 1 + myrandom.nextInt(maxId-myId);
-				// pick 2 mods, add edge
-				Module pre = workflow.getModule(preId);
-				Module suc = workflow.getModule(sucId);
-				pre.addSucMod(suc);
-				suc.addPreMod(pre);
-				edgesToAdd--;
-			}
 			
-		} else {
+			while (edgesToAdd > 0) {
+				for (Module mod: workflow.getModList()) {
+					int myId = mod.getModId();
+					Module suc = null;
+					for (int sucId = myId+1; sucId <= maxId; sucId++) {
+						suc = workflow.getModule(sucId);
+						if (!(mod.getSucMods().contains(suc))) {
+							break;
+						}
+					}// end suc for
+					if (suc == null) {
+						// no more suc for this mod
+						// check next mod
+						continue;
+					}
+					mod.addSucMod(suc);
+					suc.addPreMod(mod);
+					edgesToAdd--;
+					if (edgesToAdd == 0) {
+						break;
+					}
+				}// end mod for
+			}// end while
+			
+		} else if (numOfEdges < (numOfMods-1)) {
 			System.out.println("Error: too few edges requested.");
 			System.exit(1);
 		}		
@@ -468,7 +493,7 @@ public class WorkflowGen {
 	 */
 	public static void workflowGen( Workflow workflow, int numOfMods, double VLR, long avgworkload, double CCR, double dense) {
 		// check input
-		if ((workflow == null) || (! (workflow.getModList().isEmpty()))) {
+		if ((workflow == null) || (workflow.getOrder()>0)) {
 			workflow = new Workflow(true);
 		}
 		
@@ -483,8 +508,9 @@ public class WorkflowGen {
 		Random myrandom = new Random();
 		
 		// generate mods
-		List<Module> mods = workflow.getModList();
+		List<Module> mods = new ArrayList<Module>();
 		modListGen(numOfMods, minworkload, loadrange, myrandom, mods);
+		workflow.setModList(mods);
 		
 		// determine module distribution i.e. how many mods in each layer
 		int[] modsAtLayer = new int[numOfLayers];
@@ -493,12 +519,11 @@ public class WorkflowGen {
 		// calculate bounds on edge number		
 		int minNumOfEdges = calcuMinNumOfEdges(numOfLayers, modsAtLayer);
 		int maxNumOfEdges = calcuMaxNumOfEdges(numOfLayers, modsAtLayer);
-		System.out.printf("min %d, max %d\n",  minNumOfEdges, maxNumOfEdges);
+		//System.out.printf("min %d, max %d\n",  minNumOfEdges, maxNumOfEdges);
 		
 		// set it to workflow
 		workflow.setModDistOnLayers(modsAtLayer);
 
-		
 		// assgin mods to layers while preserve modId order
 		int[] left = new int[numOfLayers];
 		int[] right = new int[numOfLayers];
@@ -546,16 +571,33 @@ public class WorkflowGen {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		Workflow workflow = new Workflow(true);
+		// file id: 0-9
+		int[] numOfMods = {5, 10, 15, 20, 25, 30, 35, 40, 45, 50,
+			55, 60, 65, 70, 75, 80, 85, 90, 95, 100};
 		
-		// fixed dense produces fixed edge number
-		//workflowGen(workflow, 20, 1, 100, 5.50, 0.3);
-		workflowDefaultGen(workflow, 100, 20, 90);
+		int[] numOfEdges = {6, 15, 60, 80, 200, 300, 500, 500, 580, 500, 
+			800, 900, 950, 950, 1000, 1200, 1200, 1600, 1600, 2000};
 		
-		//workflow.printStructInfo();
-		// write both formats
-		WorkflowWriter.writeLiteWorkflow(workflow, 1);
-		//WorkflowWriter.writeWorkflow(workflow, 1);
+		// just the array length
+		int scales = 20;
+		
+		// file id: 0-maxFileId
+		int maxFileId = 50;
+		
+		long avgload = 500;
+		
+		Workflow workflow = null;
+		for (int i=0; i<scales; i++) {
+			int modNum = numOfMods[i];
+			int edgeNum = numOfEdges[i];
+			// file id: instances
+			for (int j=0; j<maxFileId; j++) {
+				workflow = new Workflow(false);
+				workflowDefaultGen(workflow, avgload, modNum, edgeNum);
+				System.out.printf("%d, %d, %d\n", workflow.getOrder(), workflow.getSize(), j);
+				WorkflowWriter.writeLiteWorkflow(workflow, j);
+			}
+		}// end for
 	}
 
 }

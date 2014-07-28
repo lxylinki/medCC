@@ -24,7 +24,9 @@ def calcuAvg(mods, edges, maxindex):
         # avg over budget calculation 
         avgimpoverhbcs = 0
         avgimpoverss = 0
+        linecount = 0
         for line in imps:
+            linecount += 1
             # skip header line
             if (line.split()[0].isdigit()==False):
                 continue
@@ -37,8 +39,8 @@ def calcuAvg(mods, edges, maxindex):
             impoverss = float(items[2])
             avgimpoverss += impoverss
 
-        avgimpoverhbcs = avgimpoverhbcs/20
-        avgimpoverss = avgimpoverss/20
+        avgimpoverhbcs = avgimpoverhbcs/linecount
+        avgimpoverss = avgimpoverss/linecount
 
         imps.close()
 
@@ -56,8 +58,12 @@ if __name__=='__main__':
     
     Edges = [6, 15, 60, 80, 200, 300, 500, 500, 580, 500, 
             800, 900, 950, 950, 1000, 1200, 1200, 1600, 1600, 2000]
+
+    scales = 20
     
-    for j in range (0,20):
+    maxIdx = 50
+    
+    for j in range (0, scales):
         m = Mods[j]
         e = Edges[j]
-        calcuAvg(m, e, 10)
+        calcuAvg(m, e, maxIdx)

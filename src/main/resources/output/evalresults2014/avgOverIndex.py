@@ -1,7 +1,8 @@
+#!/usr/bin/python3
 # import concurrent.futures
 import os
 
-# produce an avg file over prob indx 0-9
+# produce an avg file over prob indx 0-maxIdx
 def calcuAvg(mods, edges, maxbudlevel):
     # imp files dir
     filedir = './{}_{}/'.format(mods, edges)
@@ -19,13 +20,16 @@ def calcuAvg(mods, edges, maxbudlevel):
         avgimpoverss = 0
 
         # get imp at level i from imp file k
-        for k in range (0, 10):
+        maxIdx = 50
+        for k in range (0, maxIdx):
             impfilename = '{}_{}_{}_Imp.txt'.format(mods, edges, k)
             impfilename = os.path.join(filedir, impfilename)
             imps = open(impfilename, 'r')
+            linecount = 0
             for line in imps:
                 if (line.split()[0].isdigit()==False):
                     continue
+                linecount += 1
                 items  = line.split()
                 budlevel = int(items[0])
                 if (budlevel != i):
@@ -38,8 +42,8 @@ def calcuAvg(mods, edges, maxbudlevel):
                     avgimpoverss += impoverss
             imps.close()
 
-        avgimpoverhbcs = avgimpoverhbcs/10
-        avgimpoverss = avgimpoverss/10
+        avgimpoverhbcs = avgimpoverhbcs/maxIdx
+        avgimpoverss = avgimpoverss/maxIdx
 
         writeline = '%d        %.2f        %.2f\n'%(i, avgimpoverhbcs, avgimpoverss)
         avgfile.write(writeline)
@@ -53,8 +57,12 @@ if __name__=='__main__':
     
     Edges = [6, 15, 60, 80, 200, 300, 500, 500, 580, 500, 
             800, 900, 950, 950, 1000, 1200, 1200, 1600, 1600, 2000]
+
+    scales = 20
     
-    for j in range (0,20):
+    budlevels = 20
+    
+    for j in range (0, scales):
         m = Mods[j]
         e = Edges[j]
-        calcuAvg(m, e, 20)
+        calcuAvg(m, e, budlevels)

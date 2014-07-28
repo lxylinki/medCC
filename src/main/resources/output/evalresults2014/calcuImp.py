@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 # import concurrent.futures
 import os
 
@@ -46,9 +47,13 @@ if __name__=='__main__':
     
     Edges = [6, 15, 60, 80, 200, 300, 500, 500, 580, 500, 
             800, 900, 950, 950, 1000, 1200, 1200, 1600, 1600, 2000]
+
+    scales = 20
+
+    maxIdx = 50
     
-    for i in range (0,10):
-        for j in range (0,20):
+    for i in range (0, maxIdx):
+        for j in range (0, scales):
             m = Mods[j]
             e = Edges[j]
             calcuImp(m, e, i)

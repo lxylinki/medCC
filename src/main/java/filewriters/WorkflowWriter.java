@@ -70,6 +70,7 @@ public class WorkflowWriter {
 				}
 			}
 			line.close();
+			//System.out.println("writed:" + filename);
 			
 		} catch (IOException ioe) {
 			System.out.println(ioe);
