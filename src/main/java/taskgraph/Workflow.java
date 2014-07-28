@@ -9,8 +9,12 @@ public class Workflow {
 	private List<Module> modList = null;	
 	private List<DataTrans> dataList = null;
 	
+	// the number of modules in each layer
+	private int[] modDistOnLayers = null;
+	
 	public Workflow( boolean data ) {
 		setModList(new ArrayList<Module>());
+		
 		// if data is needed
 		if (data) {
 			setDataList(new ArrayList<DataTrans>());
@@ -102,19 +106,24 @@ public class Workflow {
 			totaldatasize += ds.getDatasize();
 		}
 		
-		double result = (totaldatasize/totalworkload);
+		double result = totaldatasize;
+		result = result/totalworkload;
+		
 		return result;
 	}
 	
 	// avg degree
 	public double getAvgDegree() {
-		return ((this.getSize()*2)/this.getOrder());
+		double result = this.getSize()*2;
+		result = result/this.getOrder();
+		return result;
 	}
 	
 	public double getVLR() {
 		int layers = this.getNumOfLayers();
 		int mods = this.getOrder();
-		double result = (mods/layers);
+		double result = mods;
+		result = result/layers;
 		return result;
 	}
 	
@@ -232,6 +241,14 @@ public class Workflow {
 
 	public void setDataList(List<DataTrans> dataList) {
 		this.dataList = dataList;
+	}
+
+	public int[] getModDistOnLayers() {
+		return modDistOnLayers;
+	}
+
+	public void setModDistOnLayers(int[] modDistOnLayers) {
+		this.modDistOnLayers = modDistOnLayers;
 	}
 
 }

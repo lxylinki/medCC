@@ -72,11 +72,11 @@ public class WorkflowGen {
 				long frac = (long)(loadrange*myrandom.nextDouble());
 				mod = new Module(i, (minworkload + frac));
 				
-				// parallel: 0.0-1.0
-				double alpha = myrandom.nextDouble();
+				// parallel: 0.1-0.9
+				double alpha = 0.1 + 0.8*myrandom.nextDouble();
 				mod.setAlpha(alpha);
 				
-				// resource requirement: 1 to avg
+				// resource requirement: min to avg
 				int wram = minram + myrandom.nextInt(avg_ram);
 				int wdisk = mindisk + myrandom.nextInt(avg_disk);
 				
@@ -196,24 +196,49 @@ public class WorkflowGen {
 	}
 
 	/**
+	 * Build only necessary number of data edges to form a DAG
 	 * 
 	 * @param dsrange: data size range
 	 * @param workflow: workflow with mod layers marked
 	 * @param myrandom
 	 */
-	public static void buildBasicDataEdges( long mindatasize, long dsrange, Workflow workflow, Random myrandom) {
+	public static void buildMinDataEdges( long mindatasize, long dsrange, Workflow workflow, Random myrandom) {
 		/** ensure each mod has: 
 		 * 1 incoming data from mod in layer mod.layer-1
 		 * 1 outgoing data to mod in layer mod.layer+1
 		 */
+		if (workflow.getModDistOnLayers() == null) {
+			System.out.println("Error: module distribution not set.");
+			System.exit(1);
+		}
 		for (Module mod: workflow.getModList()) {
 			// skip entry mod
 			if (mod.getModId()==0) {
 				continue;
 			}
+			
 			int mylayer = mod.getLayer();
+			
+			int modsInMyLayer = workflow.getModDistOnLayers()[mylayer];
+			int modsInPreLayer = workflow.getModDistOnLayers()[mylayer-1];
+			
+			// out degree bound on pre mods
+			int minMaxDeg;
+			if (modsInPreLayer >= modsInMyLayer) {
+				minMaxDeg = 1;
+			} else {
+				minMaxDeg = (int) Math.ceil( (double)modsInMyLayer/modsInPreLayer);
+			}
+			
 			List<Module> preLayer = workflow.getModsAtLayer(mylayer-1);		
-			Module pre = randomModChoice(preLayer, myrandom);
+			//Module pre = randomModChoice(preLayer, myrandom);
+			Module pre = null;
+			for (Module premod: preLayer) {
+				if (premod.getOutdegree() < minMaxDeg) {
+					pre = premod;
+					break;
+				}
+			}
 
 			// generate data
 			long indatasize = mindatasize + (long)(dsrange*myrandom.nextDouble());
@@ -232,6 +257,11 @@ public class WorkflowGen {
 			
 			//skip entry and exit mod
 			if ( (mod.getModId()==0) || (mod.getModId() == workflow.getOrder()-1)) {
+				continue;
+			}
+			
+			// skip those already have outgoing data
+			if (mod.getOutdegree()>0) {
 				continue;
 			}
 			
@@ -257,29 +287,99 @@ public class WorkflowGen {
 	 * @param workflow
 	 * @param myrandom
 	 */
-	public static void buildExtraDataEdges( long mindatasize, long dsrange, Workflow workflow, Random myrandom) {
+	public static void buildExtraDataEdges( long mindatasize, long dsrange, Workflow workflow, Random myrandom, int edgesToAdd) {
 		/**
 		 * ensure each mod has 1 outgoing data to a mod in each layer > mod.layer+1
 		 */
+		int targetNum = edgesToAdd;
+		System.out.println(targetNum);
 		
-		for (Module mod: workflow.getModList()) {
-			//skip entry and exit mod
-			if ( (mod.getModId()==0) || (mod.getModId() == workflow.getOrder()-1)) {
-				continue;
+		while (targetNum > 0) {
+			// input workflow already got min num of edges		
+			for (Module mod: workflow.getModList()) {
+				//skip entry and exit mod
+				if ( (mod.getModId()==0) || (mod.getModId() == workflow.getOrder()-1)) {
+					continue;
+				}
+				int mylayer = mod.getLayer();
+				int maxlayer = workflow.getNumOfLayers()-1;
+				
+				for (int i=mylayer+2; i<=maxlayer; i++) {
+					List<Module> farLayer = workflow.getModsAtLayer(i);
+					
+					// collect mods that are not already suc in that layer
+					List<Module> sucCands = new ArrayList<Module>();
+					for (Module farmod: farLayer) {
+						if ( !(mod.getSucMods().contains(farmod))) {
+							sucCands.add(farmod);
+						} 					
+					}
+					// no more mods can be added from this layer
+					// continue to look into next layer
+					if (sucCands.isEmpty()) {
+						continue;
+					}
+					
+					Module suc = randomModChoice(sucCands, myrandom);
+					
+					// generate data
+					long outdatasize = mindatasize + (long)(dsrange*myrandom.nextDouble());
+					DataTrans outdata = new DataTrans(outdatasize);
+					connect(mod, suc, outdata);
+					workflow.addData(outdata);	
+					// decrement target num
+					targetNum --;
+					if (targetNum == 0) {
+						break;
+					}
+				}// end layers for
+				if (targetNum == 0) {
+					break;
+				}
+				System.out.println(targetNum);
+			}// end mods for
+		}// end while
+
+	}
+	/**
+	 * Provide number of layers and the module distribution on each layer to calculate edge bounds
+	 * 
+	 * @param numOfLayers
+	 * @param modsAtLayer
+	 * @return
+	 */
+	public static int calcuMinNumOfEdges(int numOfLayers, int[] modsAtLayer) {
+		int minNumOfEdges = 0;
+		for (int i=0; i<numOfLayers-1; i++) {
+			int minbetween;
+			//System.out.printf("%d %d\n", modsAtLayer[i], modsAtLayer[i+1]);
+			if (modsAtLayer[i] > modsAtLayer[i+1]) {
+				minbetween = modsAtLayer[i];
+			} else {
+				minbetween = modsAtLayer[i+1];
 			}
-			int mylayer = mod.getLayer();
-			int maxlayer = workflow.getNumOfLayers()-1;
-			
-			for (int i=mylayer+2; i<=maxlayer; i++) {
-				List<Module> farLayer = workflow.getModsAtLayer(i);
-				Module suc = randomModChoice(farLayer, myrandom);
-				// generate data
-				long outdatasize = mindatasize + (long)(dsrange*myrandom.nextDouble());
-				DataTrans outdata = new DataTrans(outdatasize);
-				connect(mod, suc, outdata);
-				workflow.addData(outdata);	
-			}
+			minNumOfEdges += minbetween;
 		}
+		//System.out.print(minNumOfEdges);
+		return minNumOfEdges;
+	}
+	
+	
+	public static int calcuMaxNumOfEdges(int numOfLayers, int[] modsAtLayer) {
+		int maxNumOfEdges = 0;
+		//skip exit mod 
+		for (int i=0; i<numOfLayers-1; i++) {
+			int numAfter = 0;
+			// calcu the num of mods after this layer
+			for (int j=i+1; j<numOfLayers; j++) {
+				numAfter += modsAtLayer[j];
+			}
+			// max num of outgoing edges from current layer
+			System.out.printf("%d\n", numAfter);
+			int edgesOut = modsAtLayer[i]*numAfter;
+			maxNumOfEdges += edgesOut;
+		}
+		return maxNumOfEdges;
 	}
 	
 	/** need some knowledge about network: 1 is the base in all work
@@ -289,8 +389,9 @@ public class WorkflowGen {
 	 * @param VLR (>1): pipeline-parallel
 	 * @param avgworkload (>10)
 	 * @param CCR: computation-communication
+	 * @param dense: 0.0(min num of edges)-1.0(max num of edges)
 	 */
-	public static void workflowGen( Workflow workflow, int numOfMods, double VLR, long avgworkload, double CCR, boolean dense) {
+	public static void workflowGen( Workflow workflow, int numOfMods, double VLR, long avgworkload, double CCR, double dense) {
 		// check input
 		if ((workflow == null) || (! (workflow.getModList().isEmpty()))) {
 			workflow = new Workflow(true);
@@ -310,10 +411,18 @@ public class WorkflowGen {
 		List<Module> mods = workflow.getModList();
 		modListGen(numOfMods, minworkload, loadrange, myrandom, mods);
 		
-		// determine how many mods at each layer
+		// determine module distribution i.e. how many mods in each layer
 		int[] modsAtLayer = new int[numOfLayers];
 		modsNumAtEachLayer(numOfMods, modsAtLayer, numOfLayers, myrandom);
 		
+		// calculate bounds on edge number		
+		int minNumOfEdges = calcuMinNumOfEdges(numOfLayers, modsAtLayer);
+		int maxNumOfEdges = calcuMaxNumOfEdges(numOfLayers, modsAtLayer);
+		System.out.printf("min %d, max %d\n",  minNumOfEdges, maxNumOfEdges);
+		
+		// set it to workflow
+		workflow.setModDistOnLayers(modsAtLayer);
+
 		
 		// assgin mods to layers while preserve modId order
 		int[] left = new int[numOfLayers];
@@ -346,11 +455,12 @@ public class WorkflowGen {
 		long dsrange = maxdatasize - mindatasize;
 		
 		// add necessary number of data edges to form a DAG
-		buildBasicDataEdges(mindatasize, dsrange, workflow, myrandom);
+		buildMinDataEdges(mindatasize, dsrange, workflow, myrandom);
 		
 		// add more cross-layer data edges to have a dense structure
-		if (dense) {
-			buildExtraDataEdges(mindatasize, dsrange, workflow, myrandom);
+		if (dense > 0.0) {
+			int edgesToAdd = minNumOfEdges + (int)Math.ceil( (maxNumOfEdges - minNumOfEdges)*dense );
+			buildExtraDataEdges(mindatasize, dsrange, workflow, myrandom, edgesToAdd);
 		}
 		
 		// adjust datasize/workload to meet target CCR
@@ -363,10 +473,12 @@ public class WorkflowGen {
 	public static void main(String[] args) {
 		Workflow workflow = new Workflow(true);
 		
+		// set VLR as 1: default generating alg
+		//workflowGen(workflow, 10, 1, 100, 10.50, 0.0);
+		workflowGen(workflow, 20, 1, 100, 5.50, 0.6);
 		
-		workflowGen(workflow, 50, 3.5, 100, 10.50, true);
 		//workflow.printStructInfo();
-		WorkflowWriter.writeWorkflow(workflow, 0);
+		WorkflowWriter.writeWorkflow(workflow, 1);
 	}
 
 }

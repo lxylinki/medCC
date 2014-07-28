@@ -223,7 +223,7 @@ public class CG {
 		*/
 		
 		List <VMtype> vmtypes = new ArrayList<VMtype>();
-		vmtypes = VmTypesGen.vmTypeList(14);
+		vmtypes = VmTypesGen.vmTypeList(6);
 		
 		Workflow workflow = new Workflow(false);
 		Workflowreaderlite.readliteworkflow(workflow, 50, 500, 3, false);
@@ -234,9 +234,9 @@ public class CG {
 				mod.profiling(type);
 			}
 		}		
-		double budget = 20.62;
+		double budget = 14.30;
 		double ed = criticalgreedy(workflow, vmtypes, budget);
-		//workflow.printSched();
+		workflow.printSched();
 		System.out.printf("ED=%.2f\n", ed);
 	}
 }

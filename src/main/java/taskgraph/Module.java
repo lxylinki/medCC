@@ -65,10 +65,16 @@ public class Module {
 	// longest path len from entry mod
 	private double tlevel = 0;
 	
-	// parallel factor
+	// parallel factor: introduce some un-linearity
 	// use default 0.85 in tcc14 simulation 
-	//private double alpha = 0.85;
-	private double alpha = 1.0;
+	private double alpha = 0.85;
+	
+	/** Note :
+	 * 	if pure parallel
+	 * 	nothing to schedule in terms of cost
+	 * 	can directly apply best type
+	 */
+	//private double alpha = 1.0;
 	
 	// sched related
 	private int vmtypeid = -1;

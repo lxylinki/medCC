@@ -18,19 +18,32 @@ public class WorkflowWriter {
 	public static String format = ".txt";
 	
 	// generate filename
-	public static String filename(Workflow workflow, int fileId) {
+	public static String filename(Workflow workflow, int fileId, boolean full) {
 		int modnum = workflow.getOrder();
-		int vlr = (int) workflow.getVLR();
-		int ccr = (int) workflow.getCCR();
+		int edgenum = workflow.getSize();
+		String name = null;
 		
-		String name = "workflow_" + modnum + "_" + vlr + "_" + ccr + "_" + fileId + format;
+		if (full) {
+			int vlr = (int) workflow.getVLR();
+			int ccr = (int) workflow.getCCR();
+			name = "workflow_" + modnum + "_" + edgenum + "_" + vlr + "_" + ccr + "_" + fileId + format;
+		} else {
+			name = "workflow_" + modnum + "_" + edgenum + "_" + fileId + format;
+		}
+		
 		return name;
 	}
 	
 	
+	// no data info
+	public static void writeLiteWorkflow(Workflow workflow, int fileId) {
+		System.out.println(filename(workflow, fileId, false));
+	}
+	
+	// full workflow
 	public static void writeWorkflow(Workflow workflow, int fileId) {
 		// full file name
-		String filename = dirprefix + filename(workflow, fileId);
+		String filename = dirprefix + filename(workflow, fileId, true);
 		
 		File file = new File(filename);
 		file.getParentFile().mkdirs();

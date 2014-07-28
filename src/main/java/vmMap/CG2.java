@@ -64,6 +64,7 @@ public class CG2 {
 		double mindelay = workflow.getEd();
 		//System.out.printf("Min delay %.2f\n", mindelay);
 		
+		// re-initialize
 		for (Module mod: workflow.getModList()) {
 			mod.setVmtype(null);
 		}
@@ -84,6 +85,7 @@ public class CG2 {
 		double maxdelay = workflow.getEd();
 		//System.out.printf("Max delay %.2f\n", maxdelay);
 		
+		// re-initialize
 		for (Module mod: workflow.getModList()) {
 			mod.setVmtype(null);
 		}
@@ -117,6 +119,7 @@ public class CG2 {
 		
 		// check budget input
 		double mincost = getMinCost(workflow, vmtypes);
+		
 		if (budget < mincost) {
 			System.out.printf("Error: budget %.2f below min cost %.2f.\n", budget, mincost);
 			System.exit(1);
@@ -176,13 +179,14 @@ public class CG2 {
 		Workflowreaderlite.readliteworkflow(workflow, 15, 60, 3, false);
 		
 		// profiling: collect mod-vmtype execution info
+		/**
 		for (VMtype type: vmtypes) {
 			for (Module mod: workflow.getModList()) {
 				mod.profiling(type);
 			}
-		}	
+		}*/	
 		
-		double budget = 3.8;
+		double budget = 3.83;
 		double ed = cg2(workflow, vmtypes, budget);
 		workflow.printSched();
 		System.out.printf("ED=%.2f, Util %.2f\n", ed, workflow.getCost()/budget);
