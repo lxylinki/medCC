@@ -5,8 +5,8 @@ import os
 # produce an avg file over prob indx 0-maxIdx
 def calcuAvg(mods, edges, maxbudlevel):
     # imp files dir
-    filedir = './{}_{}/'.format(mods, edges)
-    outfiledir = './avgImp/overIndex/'
+    filedir = './avgImpNew/'
+    outfiledir = './avgImpNew/overIndex/'
 
     # output filename
     avgfilename = '{}_{}_AvgOverIndex.txt'.format(mods, edges)

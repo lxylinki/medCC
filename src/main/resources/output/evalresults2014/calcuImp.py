@@ -12,8 +12,9 @@ def calcuImp(mods, edges, index):
     results = open(filename, 'r')
     
     # output filename
+    outputFiledir = './avgImpNew/'
     impfilename = '{}_{}_{}_Imp.txt'.format(mods, edges, index)
-    impfilename = os.path.join(filedir, impfilename)
+    impfilename = os.path.join(outputFiledir, impfilename)
     impfile = open(impfilename, 'w')
     impfile.write('        CG/HBCS        CG/ScaleStar\n')
 

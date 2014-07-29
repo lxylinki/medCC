@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 # import concurrent.futures
 import os
 
@@ -5,8 +6,8 @@ import os
 def calcuAvg(mods, edges, maxindex):
     
     # Imp files directory
-    filedir = './{}_{}/'.format(mods, edges)
-    outfiledir = './avgImp/overCost/'
+    filedir = './avgImpNew'
+    outfiledir = './avgImpNew/overCost/'
     
     # output filename: one file per dir
     avgfilename = '{}_{}_AvgOverCost.txt'.format(mods, edges)
@@ -26,10 +27,10 @@ def calcuAvg(mods, edges, maxindex):
         avgimpoverss = 0
         linecount = 0
         for line in imps:
-            linecount += 1
             # skip header line
             if (line.split()[0].isdigit()==False):
                 continue
+            linecount += 1
             items = line.split()
    
             # imp measurements
