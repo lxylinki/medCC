@@ -22,7 +22,8 @@ def calcuAvg(Mods, Edges, maxbudlevel):
     outfilename = 'costasx_table.tex'
     outfile = open(outfilename, 'w')
     outfile.write('Budget Level &   Imp(HBCS) \% &   StdDv &   Imp(SS) \%  &  StdDv \\\\ \n')
-
+    outfile.write('\\hline')
+    
     # for each bud level 1-20
     for l in range(1, maxbudlevel+1):
         avgoverhbcs = 0
