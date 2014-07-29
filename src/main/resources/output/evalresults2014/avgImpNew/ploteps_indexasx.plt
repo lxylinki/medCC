@@ -12,7 +12,7 @@ set xlabel 'Problem Index'
 set ylabel 'Average MED Improvement Percentage'
 set grid y
 set auto x
-set yrange [-10:60]
+set yrange [-10:55]
 set boxwidth 0.9
 set style histogram cluster gap 2
 set style histogram errorbars gap 2 lw 2
