@@ -30,6 +30,8 @@ public class Workflowreaderlite {
 			if ( !(workflow.getModList().isEmpty())) {
 				workflow.setModList(new ArrayList<Module>());
 			}
+		} else {
+			workflow = new Workflow(false);
 		}
 		
 		String dirprefix = "src/main/resources/input/workflowdata2014/";

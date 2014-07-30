@@ -23,13 +23,16 @@ public class WorkflowWriter {
 		String name = null;
 		
 		if (full) {
-			int vlr = (int) Math.ceil(workflow.getVLR());
-			int ccr = (int) Math.ceil(workflow.getCCR());
-			name = "workflow_" + modnum + "_" + edgenum + "_" + vlr + "_" + ccr + "_" + fileId + format;
+			//int vlr = (int) Math.floor(workflow.getVLR());
+			//int ccr = (int) Math.floor(workflow.getCCR());
+			DecimalFormat dft = new DecimalFormat("###.##");
+			double vlr = workflow.getVLR();
+			double ccr = workflow.getCCR();
+			
+			name = "workflow_" + modnum + "_" + edgenum + "_" + dft.format(vlr) + "_" + dft.format(ccr) + "_" + fileId + format;
 		} else {
 			name = "workflow_" + modnum + "_" + edgenum + "_" + fileId + format;
 		}
-		
 		return name;
 	}
 	
@@ -82,7 +85,7 @@ public class WorkflowWriter {
 	// full workflow
 	public static void writeWorkflow(Workflow workflow, int fileId) {
 		// full file name
-		String filename = dirprefix + filename(workflow, fileId, true);
+		String filename = dirprefix + "All_Info/" + filename(workflow, fileId, true);
 		
 		File file = new File(filename);
 		file.getParentFile().mkdirs();

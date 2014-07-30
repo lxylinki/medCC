@@ -82,7 +82,9 @@ public class Workflow {
 	
 	// total number of layers
 	public int getNumOfLayers() {
-		return this.getExitMod().getLayer();
+		// layer Id: 0 - max
+		// num = max + 1
+		return this.getExitMod().getLayer() + 1;
 	}
 	
 	public Module getEntryMod() {
