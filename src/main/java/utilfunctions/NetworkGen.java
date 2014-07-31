@@ -1,5 +1,7 @@
 package utilfunctions;
 
+import hostgraph.Network;
+
 /** generate network graph (snapshot) based on 
  *  1.full link bandwidth
  *  2.max host cpu, ram, disk
@@ -26,14 +28,16 @@ public class NetworkGen {
 	public static int maxram = 100;
 	
 	public static int maxdisk = 100;
-	
 
-	
-	// a static network graph with each component has fixed resouce value
-	public static void staticNetworkGen(int numOfHosts) {
+	// adjust resources values to meet given average
+	public static void adjustAvg() {
 		
 	}
 	
+	// a static network graph with each component has fixed resouce value
+	public static void staticNetworkGen(Network network, int numOfHosts) {
+		
+	}
 	
 	// generate availability table for cpu/ram/disk/link
 	public static void timeSeriesGen(long maxtime, int maxvalue) {
@@ -44,7 +48,7 @@ public class NetworkGen {
 	 * 
 	 * @param numOfHosts
 	 */
-	public static void dynamicNetworkGen(int numOfHosts) {
+	public static void dynamicNetworkGen(Network network, int numOfHosts) {
 		
 	} 
 

@@ -21,7 +21,7 @@ def calcuAvg(Mods, Edges, maxindex):
     outfilename = 'indexasx_table.tex'
     outfile = open(outfilename, 'w')
     outfile.write('Prb Idx  & $(m, |E_w|, n)$  & Imp(HBCS)\%  &   StdDv  &  Imp(SS)\%  &  StdDv \\\\ \n')
-    outfile.write('\\hline')
+    outfile.write('\\hline\n')
     # prb Idx
     for i in range(0, maxindex):
         avgoverhbcs = 0

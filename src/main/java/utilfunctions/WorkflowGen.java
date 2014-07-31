@@ -185,7 +185,7 @@ public class WorkflowGen {
 				
 				// need to inc data sizes by 1/ratio
 				for (DataTrans data: workflow.getDataList()) {
-					long currentdatasize = data.getDatasize();
+					double currentdatasize = data.getDatasize();
 					long newdatasize = (long)(currentdatasize/ratio);
 					
 					//System.out.printf("data {%d, %d}: old %d, new %d\n", data.getSrcModId(), data.getDstModId(), currentdatasize, newdatasize);
@@ -618,13 +618,15 @@ public class WorkflowGen {
 	 * @param args
 	 */
 	public static void main(String[] args) {
+		/**
 		long avgload = 300;
 		for (int i=0; i<10; i++) {
 			Workflow workflow = new Workflow(true);
 			workflowGen(workflow, 20, 3.5, avgload, 5, 0.8);
 			WorkflowWriter.writeWorkflow(workflow, i);
 			System.out.printf("file %d\n", i);
-		}
+		}*/
+		tcc14_dataset();
 	}
 
 }
