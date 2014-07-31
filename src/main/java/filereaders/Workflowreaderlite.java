@@ -191,8 +191,8 @@ public class Workflowreaderlite {
 	public static void main(String[] args) {
 		
 		Workflow mytest = new Workflow(false);
-		//readliteworkflow12(mytest, 10, 15, 0, false);	
-		readliteworkflow(mytest, 20, 90, 1, false);	
+		readliteworkflow12(mytest, 10, 15, 0, false);	
+		//readliteworkflow(mytest, 20, 90, 1, false);	
 		
 		Module mods = mytest.getModule(0);
 		int maxId = mytest.getOrder()-1;

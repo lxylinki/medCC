@@ -93,12 +93,14 @@ public class ScaleStar {
 		int N = workflow.getOrder();		
 		for (int i=1; i<N-1; i++) {
 			Module mod = workflow.getModule(i);
+			
 			// init label with avg exec time
 			double avgtime = 0;
 			for (VMtype type: vmtypes) {
 				avgtime += mod.getTimeOn(type);
 			}
 			avgtime = avgtime / (vmtypes.size());
+			
 			// init sched info
 			mod.setVmtype(null);
 			mod.setTime(avgtime);			

@@ -39,6 +39,7 @@ public class CostConstrMedOpt {
 	private static List<String> algnames = null;
 	
 	public static void varBudgetLevel(Workflow workflow, List<VMtype> vmtypes, String filename, List<Double> algresults) {
+		
 		CG2.profile(workflow, vmtypes);
 		
 		double maxcost = CG2.getMaxCost(workflow, vmtypes);
@@ -134,7 +135,7 @@ public class CostConstrMedOpt {
 			// 100 file index
 			for (int fileid=0; fileid<100; fileid++) {
 				// construct workflow and vmtypes
-				Workflowreaderlite.readliteworkflow(workflow, mods, edges, fileid, true);
+				Workflowreaderlite.readliteworkflow12(workflow, mods, edges, fileid, true);
 				vmtypes = VmTypesGen.vmTypeList(typenum);
 				
 				// prepare files to write

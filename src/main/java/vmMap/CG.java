@@ -41,9 +41,11 @@ public class CG {
 				//System.out.printf("time dec: %.2f\n", timedec);
 				timedecmax = timedec;
 				newtype = type;
-			}	
-			*/
-			
+			}*/	
+						
+			/**
+			 * select ratio max
+			 * */
 			if ( (timedec/costinc) >= ratiomax ) {
 				ratiomax = (timedec/costinc);
 				newtype = type;

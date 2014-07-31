@@ -104,7 +104,13 @@ public class CG2 {
 		double targetcost = mod.getCostOn(vtmin) + (mod.getCostOn(vtmax)-mod.getCostOn(vtmin))*budgetlevel;
 
 		double diff = Double.MAX_VALUE;
+		
 		for (VMtype type: vmtypes) {
+			// select type within and nearest to targetcost
+			if (mod.getCostOn(type) > targetcost) {
+				continue;
+			}
+			
 			if ( Math.abs(mod.getCostOn(type) - targetcost) <= diff ) {
 				diff = Math.abs(mod.getCostOn(type) - targetcost);
 				vtselected = type;
@@ -128,6 +134,12 @@ public class CG2 {
 		// directly apply best sched if budget is redundant
 		double maxcost = getMaxCost(workflow, vmtypes);
 		if (budget >= maxcost) {
+			/**
+			 * record schedule 
+			for (Module mod: workflow.getModList()) {
+				VMtype vprime = mod.getMinDelayType(vmtypes);
+				mod.setVmtype(vprime);
+			}*/
 			return getMinDelay(workflow, vmtypes);
 		}		
 		
@@ -145,6 +157,8 @@ public class CG2 {
 		
 		
 		double ed = workflow.getEd();
+		
+		/**
 		double initialcost = workflow.getCost();
 
 		// tuning based on init sched
@@ -153,9 +167,9 @@ public class CG2 {
 			// rollback by cgrev
 			double costToDec = initialcost - budget;
 			ed = CGrev.cgrev(workflow, costToDec, vmtypes);
-		}
+		}*/
 		
-		// now there may be some cost left
+		// there may be some cost left
 		double currentCost = workflow.getCost();
 		
 		if (currentCost < budget) {

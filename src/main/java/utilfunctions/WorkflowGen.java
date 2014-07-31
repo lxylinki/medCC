@@ -583,7 +583,7 @@ public class WorkflowGen {
 	
 	// generate workflow data set in tcc14 simulation
 	public static void tcc14_dataset() {
-		// file id: 0-9
+		// file id: 0-49
 		int[] numOfMods = {5, 10, 15, 20, 25, 30, 35, 40, 45, 50,
 			55, 60, 65, 70, 75, 80, 85, 90, 95, 100};
 		
@@ -596,16 +596,14 @@ public class WorkflowGen {
 		// file id: 0-maxFileId
 		int maxFileId = 50;
 		
-		long avgload = 500;
-		
-		Workflow workflow = null;
+		long avgload = 250;
 		
 		for (int i=0; i<scales; i++) {
 			int modNum = numOfMods[i];
 			int edgeNum = numOfEdges[i];
 			// file id: instances
 			for (int j=0; j<maxFileId; j++) {
-				workflow = new Workflow(false);
+				Workflow workflow = new Workflow(false);
 				workflowDefaultGen(workflow, avgload, modNum, edgeNum);
 				System.out.printf("%d, %d, %d\n", workflow.getOrder(), workflow.getSize(), j);
 				WorkflowWriter.writeLiteWorkflow(workflow, j);
@@ -626,6 +624,7 @@ public class WorkflowGen {
 			WorkflowWriter.writeWorkflow(workflow, i);
 			System.out.printf("file %d\n", i);
 		}*/
+		
 		tcc14_dataset();
 	}
 

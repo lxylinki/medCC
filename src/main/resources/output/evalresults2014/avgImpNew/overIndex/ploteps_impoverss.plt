@@ -13,7 +13,7 @@ set ylabel 'Problem Index'
 set zlabel 'Imp(ScaleStar)' rotate by 90
 set auto x
 set auto y
-set zrange [-25:50]
+set zrange [-10:50]
 set grid
 unset key
 splot 'impoverss.dat' w points ls 1

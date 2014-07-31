@@ -125,12 +125,11 @@ public class CostConstrMed {
 		algresults.add(0.0);
 		
 		//List <VMtype> vmtypes = new ArrayList<VMtype>();
-		
-		// 10 file index
-		// new: 50 file indexes
-		for (int fileid=0; fileid<50; fileid++) {
-			// 20 problem index
-			for (int i=0; i<20; i++) {
+
+		// 20 problem index
+		for (int i=0; i<20; i++) {
+			// new: 50 file indexes
+			for (int fileid=0; fileid<50; fileid++) {
 				int mods = numOfMods[i];
 				int edges = numOfEdges[i];
 				int typenum = numOfTypes[i];

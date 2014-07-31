@@ -1,3 +1,4 @@
+#!/usr/bin/gnuplot
 set linetype 1 lc rgb '#FF6600' lt 1 lw 2   # --- orange
 set linetype 2 lc rgb '#0099FF' lt 1 lw 2   # --- cyan
 set linetype 3 lc rgb '#3299D9' lt 1 lw 2   # --- lightblue
