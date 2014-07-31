@@ -6,7 +6,8 @@ import java.util.List;
 import utilfunctions.CriticalPath;
 
 public class Workflow {
-	private List<Module> modList = null;	
+	private List<Module> modList = null;
+	
 	private List<DataTrans> dataList = null;
 	
 	// the number of modules in each layer
@@ -185,6 +186,7 @@ public class Workflow {
 				for (DataTrans data: this.getDataList()) {
 					System.out.printf("%d\t%d\t%d\n", data.getSrcModId(), data.getDstModId(), data.getDatasize());
 				}
+				System.out.print("\n");
 			} else {
 				System.out.println("Error: empty workflow");
 				System.exit(1);
