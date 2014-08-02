@@ -109,6 +109,11 @@ public class HBCS {
 	
 			for (Module mod: workflow.getModList()) {
 				
+				//skip entry and exit mods
+				if (mod.getPreMods().isEmpty() || mod.getSucMods().isEmpty()) {
+					continue;
+				}
+				
 				if (mod.getVmtypeid()==-1) {
 					VMtype mincosttype = mod.getMinCostType(vmtypes);
 					double localmincost = mod.getCostOn(mincosttype);

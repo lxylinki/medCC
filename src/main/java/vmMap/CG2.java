@@ -3,12 +3,12 @@ package vmMap;
 import java.util.ArrayList;
 import java.util.List;
 
-import filereaders.Workflowreaderlite;
 import taskgraph.Module;
 import taskgraph.Workflow;
 import utilfunctions.CriticalPath;
 import utilfunctions.VmTypesGen;
 import virtualnet.VMtype;
+import filereaders.Workflowreaderlite;
 
 public class CG2 {
 	
@@ -107,6 +107,7 @@ public class CG2 {
 		
 		for (VMtype type: vmtypes) {
 			// select type within and nearest to targetcost
+			
 			if (mod.getCostOn(type) > targetcost) {
 				continue;
 			}
@@ -163,6 +164,7 @@ public class CG2 {
 
 		// tuning based on init sched
 		// it may exceed budget 
+
 		if (initialcost > budget) {
 			// rollback by cgrev
 			double costToDec = initialcost - budget;

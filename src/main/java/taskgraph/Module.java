@@ -199,6 +199,7 @@ public class Module {
 	
 	// lookup in the profile map
 	public double getCostOn(VMtype type) {
+		//System.out.printf("mod %d type %d\n", this.getModId(), type.getTypeid());
 		double cost = this.profiles.get(type).execCost;
 		return cost;
 	}
@@ -212,6 +213,7 @@ public class Module {
 	
 	public VMtype getMaxCostType(List<VMtype> vmtypes) {
 		VMtype maxcosttype = null;
+		
 		double localmax = Double.MIN_VALUE;
 		for (VMtype type: vmtypes) {
 			if (this.getCostOn(type) >= localmax) {
@@ -224,6 +226,7 @@ public class Module {
 	
 	public VMtype getMinCostType(List<VMtype> vmtypes) {
 		VMtype mincosttype = null;
+		
 		double localmin = Double.MAX_VALUE;
 		for (VMtype type: vmtypes) {
 			if (this.getCostOn(type) <= localmin) {
@@ -237,6 +240,7 @@ public class Module {
 	
 	public VMtype getMinDelayType(List<VMtype> vmtypes) {
 		VMtype mindelaytype = null;
+		
 		double localmin = Double.MAX_VALUE;
 		for (VMtype type: vmtypes) {
 			if (this.getTimeOn(type) <= localmin) {
@@ -249,6 +253,7 @@ public class Module {
 	
 	public VMtype getMaxDelayType(List<VMtype> vmtypes) {
 		VMtype maxdelaytype = null;
+		
 		double localmax = Double.MIN_VALUE;
 		for (VMtype type: vmtypes) {
 			if (this.getTimeOn(type) >= localmax) {

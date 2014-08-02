@@ -2,16 +2,10 @@
 import os
 
 # statistics on optimal comparison
-def optstats(mods, edges):
+def optstats(mods, edges, types):
     # med files dir
     filedir = './opt/{}_{}/'.format(mods, edges)
     
-    # output filename: one file per dir
-    statsfilename = '{}_{}_OptStats.txt'.format(mods, edges)
-    statsfilename = os.path.join(filedir, statsfilename)
-    statsfile = open(statsfilename, 'w')
-    statsfile.write('CG        HBCS        ScaleStar\n')
-
     cgopt = 0
     hbcsopt = 0
     ssopt = 0
@@ -41,18 +35,27 @@ def optstats(mods, edges):
                 ssopt = ssopt+1
 
         #writeline = ' %d        %d        %d\n'%(cgopt, hbcsopt, ssopt)
-    writeline = ' %d        %d        %d\n'%(cgopt, hbcsopt, ssopt)
-    statsfile.write(writeline)
-    statsfile.close()
+    writeline = '%d        %d        %d        (%d,%d,%d)\n'%(cgopt, hbcsopt, ssopt, mods, edges, types)
     results.close()
+    return writeline
 
 
 if __name__=='__main__':
     Mods = [5, 6, 7, 8]
     Edges = [6, 11, 14, 21]
+    Types = [5, 6, 7, 8]
     scales = 4
+
+    # output filename: one file per dir
+    statsfilename = 'optstats.dat'
+    statsfilename = os.path.join('./opt/', statsfilename)
+    statsfile = open(statsfilename, 'w')
+    statsfile.write('CG         HBCS       ScaleStar    PrbIndex\n')
 
     for j in range (0,scales):
         m = Mods[j]
         e = Edges[j]
-        optstats(m, e)
+        v = Types[j]
+        writeline = optstats(m, e, j)
+        statsfile.write(writeline)
+    statsfile.close()

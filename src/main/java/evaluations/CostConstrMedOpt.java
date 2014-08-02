@@ -3,7 +3,6 @@ package evaluations;
 import java.util.ArrayList;
 import java.util.List;
 
-import taskgraph.Module;
 import taskgraph.Workflow;
 import utilfunctions.VmTypesGen;
 import virtualnet.VMtype;
@@ -44,41 +43,7 @@ public class CostConstrMedOpt {
 		
 		double maxcost = CG2.getMaxCost(workflow, vmtypes);
 		double mincost = CG2.getMinCost(workflow, vmtypes);
-		
-		/**
-		System.out.printf("Max cost %.2f\n", maxcost);
-		System.out.printf("Min cost %.2f\n", mincost);
-				
-		// min delay
-		for (Module mod: workflow.getModList()) {
-			if (mod.getPreMods().isEmpty() || mod.getSucMods().isEmpty()) {
-				continue;
-			}
-			VMtype vprime = mod.getMinDelayType(vmtypes);
-			mod.setVmtype(null);
-			mod.setVmtype(vprime);
-		}
 
-		double mindelay = workflow.getEd();
-		System.out.printf("Min delay %.2f\n", mindelay);
-		
-		
-		for (Module mod: workflow.getModList()) {
-			if (mod.getPreMods().isEmpty() || mod.getSucMods().isEmpty()) {
-				continue;
-			}
-			VMtype vmin = mod.getMinCostType(vmtypes);
-			mod.setVmtype(null);
-			mod.setVmtype(vmin);
-		}
-		double maxdelay = workflow.getEd();
-		System.out.printf("Max delay %.2f\n", maxdelay);
-		*/	
-		
-		// init
-		for (Module mod: workflow.getModList()) {
-			mod.setVmtype(null);
-		}
 
 		double budgetInc = (maxcost-mincost)/budgetlevels;	
 		
@@ -109,6 +74,7 @@ public class CostConstrMedOpt {
 	public static void main(String[] args) {
 
 		algnames = new ArrayList<String>();
+		
 		// algs to run
 		algnames.add("CG2");
 		algnames.add("HBCS");
@@ -124,7 +90,6 @@ public class CostConstrMedOpt {
 		algresults.add(0.0);
 		algresults.add(0.0);
 		
-		//List <VMtype> vmtypes = new ArrayList<VMtype>();
 		
 		// 4 problem index: 5, 6, 7, 8
 		for (int i=0; i<4; i++) {
@@ -136,10 +101,13 @@ public class CostConstrMedOpt {
 			for (int fileid=0; fileid<100; fileid++) {
 				// construct workflow and vmtypes
 				Workflowreaderlite.readliteworkflow12(workflow, mods, edges, fileid, true);
+				
 				vmtypes = VmTypesGen.vmTypeList(typenum);
+				
 				
 				// prepare files to write
 				String resfilename = MedAlgResultswriter.resfilename(mods, edges, fileid, true);
+				
 				MedAlgResultswriter.touch(resfilename, algnames);
 				
 				varBudgetLevel(workflow, vmtypes, resfilename, algresults);

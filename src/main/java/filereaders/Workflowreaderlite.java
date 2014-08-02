@@ -107,12 +107,10 @@ public class Workflowreaderlite {
 	 */
 	public static void readliteworkflow12( Workflow workflow, int order, int size, int id, boolean tiny) {
 		
-		if (workflow != null) {
-			if ( !(workflow.getModList().isEmpty())) {
-				workflow.setModList(new ArrayList<Module>());
-			}
+		if (workflow == null || !(workflow.getModList().isEmpty())) {
+			workflow.setModList(new ArrayList<Module>());
 		}
-	
+		
 		String dirprefix = "src/main/resources/input/workflowdata2012/";
 		String fileformat = ".txt";
 		String filename;
