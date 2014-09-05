@@ -3,7 +3,6 @@ package evaluations;
 import java.util.ArrayList;
 import java.util.List;
 
-import taskgraph.Module;
 import taskgraph.Workflow;
 import utilfunctions.VmTypesGen;
 import virtualnet.VMtype;
@@ -76,10 +75,6 @@ public class CostConstrMed {
 		System.out.printf("Max delay %.2f\n", maxdelay);
 		*/	
 		
-		// init
-		for (Module mod: workflow.getModList()) {
-			mod.setVmtype(null);
-		}
 
 		double budgetInc = (maxcost-mincost)/budgetlevels;	
 		
@@ -146,5 +141,4 @@ public class CostConstrMed {
 			}
 		}// end for
 	}
-
 }

@@ -56,6 +56,6 @@ if __name__=='__main__':
         m = Mods[j]
         e = Edges[j]
         v = Types[j]
-        writeline = optstats(m, e, j)
+        writeline = optstats(m, e, Types[j])
         statsfile.write(writeline)
     statsfile.close()

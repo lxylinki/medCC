@@ -53,7 +53,7 @@ public class MedAlgResultswriter {
 	public static void medwrite(String filename, int budgetlevel, List<Double> algresults) {
 		
 		DecimalFormat dft = new DecimalFormat("###.##");
-		String resultline = Integer.toString(budgetlevel);
+		String resultline = Integer.toString(budgetlevel+1);
 		
 		try {
 			BufferedWriter line = new BufferedWriter(new FileWriter(filename, true));
