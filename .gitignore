@@ -73,3 +73,5 @@ Thumbs.db
 .RData
 .Rhistory
 
+# txt dat files
+*.txt

@@ -81,7 +81,6 @@ public class BruteForceTree {
 		for (node nod: basetree.getNodes()) {
 			if (isleaf(nod, basetree)) {
 				leafs.add(nod);
-
 			}
 		}
 		
